@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anforderungen an ein DBMS — Zuordnung am Beispiel InstaHub</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f4f3ef;
+    --surface-2: #ebe9e3;
+    --border: #d8d6cf;
+    --text: #1f1f1e;
+    --muted: #5f5e5a;
+    --ok: #2f6b4f;
+    --ok-bg: #eef4f0;
+    --no: #9c3b3b;
+    --no-bg: #f7eeee;
+    --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  main { max-width: 940px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 28px; }
+  .eyebrow { font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0; }
+  .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 12px; font-size: 14px; color: var(--muted); }
+  .bar { height: 3px; background: var(--surface-2); margin-top: 10px; }
+  .bar > div { height: 100%; background: var(--muted); width: 0; transition: width .25s ease; }
+  @media (prefers-reduced-motion: reduce) { .bar > div { transition: none; } }
+
+  .case {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 22px 24px;
+    font-size: 17px;
+  }
+  .case .label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 8px; }
+  code { font-family: var(--mono); font-size: .92em; background: var(--surface-2); padding: 1px 4px; border-radius: 3px; }
+
+  .prompt { margin: 26px 0 12px; font-size: 14px; color: var(--muted); }
+  .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .group h2 { font-size: 13px; font-weight: 600; color: var(--muted); margin: 0 0 8px; letter-spacing: .02em; }
+  .opt {
+    display: block; width: 100%; text-align: left;
+    font: inherit; font-size: 15px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
+    padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+  }
+  .opt:hover:not(:disabled) { background: var(--surface); }
+  .opt:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  .opt:disabled { cursor: default; }
+  .opt.correct { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); font-weight: 600; }
+  .opt.wrong { border-color: var(--no); background: var(--no-bg); color: var(--no); }
+  .opt.dim { opacity: .45; }
+
+  .feedback { margin-top: 24px; border: 1px solid var(--border); border-radius: 6px; padding: 18px 20px; background: var(--surface); }
+  .feedback.hit { border-color: var(--ok); background: var(--ok-bg); }
+  .feedback.miss { border-color: var(--no); background: var(--no-bg); }
+  .verdict { font-weight: 600; margin: 0 0 6px; }
+  .feedback.hit .verdict { color: var(--ok); }
+  .feedback.miss .verdict { color: var(--no); }
+  .feedback p { margin: 0; }
+
+  .actions { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  button.primary {
+    font: inherit; font-size: 15px; font-weight: 600;
+    background: var(--text); color: var(--bg); border: 1px solid var(--text);
+    border-radius: 5px; padding: 10px 20px; cursor: pointer;
+  }
+  button.ghost {
+    font: inherit; font-size: 15px;
+    background: none; color: var(--muted); border: 1px solid var(--border);
+    border-radius: 5px; padding: 10px 16px; cursor: pointer;
+  }
+  button.primary:focus-visible, button.ghost:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+  .score { font-size: 34px; font-weight: 600; margin: 0 0 4px; }
+  .review { list-style: none; padding: 0; margin: 24px 0 0; }
+  .review li { border-top: 1px solid var(--border); padding: 14px 0; }
+  .review .anf { font-weight: 600; }
+  .review .said { font-size: 14px; color: var(--no); }
+  .review .fall { font-size: 15px; color: var(--muted); margin-top: 4px; }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 20px; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-top: 1px solid var(--border); }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; border-top: none; }
+  td.anf { font-weight: 600; width: 34%; }
+  footer { margin-top: 48px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12.5px; color: var(--muted); }
+  .hidden { display: none; }
+  @media (max-width: 760px) { .groups { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Informatik · Datenbanken</p>
+    <h1>Anforderungen an ein DBMS — neun Fälle aus InstaHub</h1>
+    <div class="meta">
+      <span id="progress">Fall 1 von 9</span>
+      <span id="tally">0 richtig</span>
+    </div>
+    <div class="bar"><div id="barfill"></div></div>
+  </header>
+
+  <section id="quiz">
+    <div class="case">
+      <span class="label">Beobachtung im Hub</span>
+      <div id="caseText"></div>
+    </div>
+
+    <p class="prompt">Welche Anforderung an das DBMS ist hier berührt?</p>
+    <div class="groups" id="groups"></div>
+
+    <div id="feedback" class="feedback hidden" role="status" aria-live="polite">
+      <p class="verdict" id="verdict"></p>
+      <p id="explain"></p>
+    </div>
+
+    <div class="actions">
+      <button class="primary hidden" id="next">Weiter</button>
+      <button class="ghost" id="showSolution">Lösungsübersicht</button>
+    </div>
+  </section>
+
+  <section id="result" class="hidden">
+    <p class="score" id="scoreLine"></p>
+    <p id="scoreNote" style="color:var(--muted);margin:0"></p>
+    <ul class="review" id="review"></ul>
+    <div class="actions">
+      <button class="primary" id="again">Noch einmal</button>
+      <button class="ghost" id="showSolution2">Lösungsübersicht</button>
+    </div>
+  </section>
+
+  <section id="solution" class="hidden">
+    <h1 style="font-size:19px">Lösungsübersicht</h1>
+    <table>
+      <thead><tr><th>Anforderung</th><th>Fall im Hub</th></tr></thead>
+      <tbody id="solutionBody"></tbody>
+    </table>
+    <div class="actions"><button class="ghost" id="backFromSolution">Zurück</button></div>
+  </section>
+
+  <footer>
+    Anforderungen nach E. F. Codd (1982). Fallbeispiele auf Basis der InstaHub-Datenstruktur (instahub.org).
+    Läuft offline im Browser, es werden keine Daten gespeichert oder übertragen.
+  </footer>
+</main>
+
+<script>
+const REQUIREMENTS = [
+  { group: "Datenqualität", items: [
+    { id: "redundanz", name: "Vermeidung von Redundanz" },
+    { id: "konsistenz", name: "Konsistenz" },
+    { id: "integritaet", name: "Integrität" },
+  ]},
+  { group: "Datennutzung", items: [
+    { id: "mehrbenutzer", name: "Mehrbenutzerbetrieb" },
+    { id: "sql", name: "Datenbanksprache (SQL)" },
+    { id: "auswertung", name: "Flexible Auswertung" },
+    { id: "trennung", name: "Trennung Programm / Daten" },
+  ]},
+  { group: "Schutz der Daten", items: [
+    { id: "sicherheit", name: "Datensicherheit" },
+    { id: "datenschutz", name: "Datenschutz" },
+  ]},
+];
+
+const NAMES = {};
+REQUIREMENTS.forEach(g => g.items.forEach(i => NAMES[i.id] = i.name));
+
+const CASES = [
+  {
+    id: "mehrbenutzer",
+    text: 'Während der Doppelstunde arbeiten 25 Schülerinnen und Schüler gleichzeitig im selben Hub. Jeder sieht sofort die Photos und Likes der anderen.',
+    why: 'Alle greifen zur selben Zeit auf dieselbe, zentral gespeicherte Datenbasis zu — genau das leistet der Mehrbenutzerbetrieb.'
+  },
+  {
+    id: "sql",
+    text: 'Du willst wissen, welche fünf Nutzer die meisten Follower haben, ohne die Tabelle <code>follows</code> von Hand durchzuzählen.',
+    why: 'Die Frage wird als Abfrage formuliert statt als Handarbeit. Dafür stellt das DBMS eine Datenbanksprache bereit: <code>SELECT … FROM follows … ORDER BY …</code>'
+  },
+  {
+    id: "sicherheit",
+    text: 'Die Festplatte des Schulservers fällt aus. Am nächsten Tag ist der Hub mit allen Photos und Kommentaren wieder verfügbar.',
+    why: 'Backups und Wiederherstellung sind technische Maßnahmen der Datensicherheit. Sie schützen den Datenbestand vor Verlust.'
+  },
+  {
+    id: "datenschutz",
+    text: 'Ein Werbekunde möchte die E-Mail-Adressen aus <code>users</code> kaufen, um Anzeigen außerhalb des Hubs zu schalten.',
+    why: 'Hier geht es nicht um Technik, sondern um Erlaubnis: Wer darf personenbezogene Daten zu welchem Zweck nutzen? Das regelt der Datenschutz (DSGVO).'
+  },
+  {
+    id: "trennung",
+    text: 'Die Weboberfläche von InstaHub wird auf eine neue Version aktualisiert. Photos, Kommentare und Likes bleiben davon unberührt.',
+    why: 'Anwendung und Datenbasis sind getrennt. Das Programm kann ausgetauscht werden, ohne die Daten anzutasten — und umgekehrt.'
+  },
+  {
+    id: "auswertung",
+    text: 'Aus derselben Tabelle <code>likes</code> beantwortest du zwei ganz verschiedene Fragen: Welches Photo ist das beliebteste? Und welcher Nutzer vergibt die meisten Likes?',
+    why: 'Ein und derselbe Datenbestand lässt unterschiedliche Auswertungen für unterschiedliche Nutzer zu — möglich wird das durch die Trennung von Programm und Daten.'
+  },
+  {
+    id: "redundanz",
+    text: 'Damit die Anzeige schneller wird, speichert jemand den Benutzernamen zusätzlich in jeder Zeile von <code>likes</code> mit — obwohl er bereits in <code>users</code> steht.',
+    why: 'Dieselbe Information liegt doppelt in der Datenbasis. Angestrebt ist eine minimale Datenbasis ohne doppelt gespeicherte Daten.'
+  },
+  {
+    id: "konsistenz",
+    text: 'Ein Photo wird aus <code>photos</code> gelöscht. Die zugehörigen Zeilen in <code>likes</code> bleiben stehen und verweisen auf eine <code>photo_id</code>, die es nicht mehr gibt.',
+    why: 'Der Datenbestand widerspricht sich selbst. Konsistenz meint die Korrektheit und Widerspruchsfreiheit der gespeicherten Daten.'
+  },
+  {
+    id: "integritaet",
+    text: 'Beim Anlegen eines Nutzers wird als <code>birthday</code> der 30. Februar akzeptiert und in <code>centimeters</code> der Text „ziemlich groß“ gespeichert.',
+    why: 'Die Werte liegen außerhalb des Definitionsbereichs ihrer Attribute und haben den falschen Datentyp. Das verhindert die Integritätssicherung.'
+  },
+];
+
+let order = [];
+let idx = 0;
+let hits = 0;
+let missed = [];
+let answered = false;
+
+const $ = id => document.getElementById(id);
+
+function shuffle(a) {
+  const c = a.slice();
+  for (let i = c.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [c[i], c[j]] = [c[j], c[i]];
+  }
+  return c;
+}
+
+function buildOptions() {
+  $("groups").innerHTML = "";
+  REQUIREMENTS.forEach(g => {
+    const wrap = document.createElement("div");
+    wrap.className = "group";
+    const h = document.createElement("h2");
+    h.textContent = g.group;
+    wrap.appendChild(h);
+    g.items.forEach(item => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.type = "button";
+      b.dataset.id = item.id;
+      b.textContent = item.name;
+      b.addEventListener("click", () => answer(item.id));
+      wrap.appendChild(b);
+    });
+    $("groups").appendChild(wrap);
+  });
+}
+
+function render() {
+  answered = false;
+  const c = order[idx];
+  $("caseText").innerHTML = c.text;
+  $("progress").textContent = "Fall " + (idx + 1) + " von " + order.length;
+  $("tally").textContent = hits + " richtig";
+  $("barfill").style.width = (idx / order.length * 100) + "%";
+  $("feedback").className = "feedback hidden";
+  $("next").classList.add("hidden");
+  document.querySelectorAll(".opt").forEach(b => {
+    b.disabled = false;
+    b.className = "opt";
+  });
+}
+
+function answer(pick) {
+  if (answered) return;
+  answered = true;
+  const c = order[idx];
+  const right = pick === c.id;
+  if (right) hits++; else missed.push({ fall: c.text, correct: c.id, picked: pick });
+
+  document.querySelectorAll(".opt").forEach(b => {
+    b.disabled = true;
+    if (b.dataset.id === c.id) b.classList.add("correct");
+    else if (b.dataset.id === pick) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+
+  $("feedback").className = "feedback " + (right ? "hit" : "miss");
+  $("verdict").textContent = right ? "Richtig zugeordnet." : "Das passt hier nicht.";
+  $("explain").innerHTML = (right ? "" : "<strong>" + NAMES[c.id] + "</strong> — ") + c.why;
+  $("tally").textContent = hits + " richtig";
+  $("next").textContent = idx === order.length - 1 ? "Auswertung" : "Weiter";
+  $("next").classList.remove("hidden");
+  $("next").focus();
+}
+
+function next() {
+  idx++;
+  if (idx >= order.length) return finish();
+  render();
+}
+
+function finish() {
+  $("quiz").classList.add("hidden");
+  $("result").classList.remove("hidden");
+  $("barfill").style.width = "100%";
+  $("progress").textContent = "Auswertung";
+  $("scoreLine").textContent = hits + " von " + order.length;
+  $("scoreNote").textContent = missed.length === 0
+    ? "Alle neun Anforderungen sicher zugeordnet."
+    : "Diese Fälle sind noch offen:";
+  const ul = $("review");
+  ul.innerHTML = "";
+  missed.forEach(m => {
+    const li = document.createElement("li");
+    li.innerHTML = '<span class="anf">' + NAMES[m.correct] + '</span> '
+      + '<span class="said">— gewählt: ' + NAMES[m.picked] + '</span>'
+      + '<div class="fall">' + m.fall + '</div>';
+    ul.appendChild(li);
+  });
+}
+
+function start() {
+  order = shuffle(CASES);
+  idx = 0; hits = 0; missed = []; 
+  $("result").classList.add("hidden");
+  $("solution").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  render();
+}
+
+function buildSolution() {
+  const body = $("solutionBody");
+  body.innerHTML = "";
+  REQUIREMENTS.forEach(g => g.items.forEach(item => {
+    const c = CASES.find(x => x.id === item.id);
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td class="anf">' + item.name + '</td><td>' + c.text + '</td>';
+    body.appendChild(tr);
+  }));
+}
+
+let cameFrom = "quiz";
+function openSolution(from) {
+  cameFrom = from;
+  $("quiz").classList.add("hidden");
+  $("result").classList.add("hidden");
+  $("solution").classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+
+$("next").addEventListener("click", next);
+$("again").addEventListener("click", start);
+$("showSolution").addEventListener("click", () => openSolution("quiz"));
+$("showSolution2").addEventListener("click", () => openSolution("result"));
+$("backFromSolution").addEventListener("click", () => {
+  $("solution").classList.add("hidden");
+  $(cameFrom).classList.remove("hidden");
+});
+
+buildOptions();
+buildSolution();
+start();
+</script>
+</body>
+</html>
