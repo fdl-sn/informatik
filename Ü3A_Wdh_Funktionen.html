@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ein Bauplan, viele Aufrufe – Übungen zu Funktionen mit Python-Turtle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papier:#fcfcfa;
+  --karo:#e2e8ea;
+  --karo-stark:#cfd9dd;
+  --tinte:#16242e;
+  --tinte-leise:#5b6a72;
+  --gruen:#0f6a58;
+  --gruen-hell:#e6f1ee;
+  --ocker:#9a6510;
+  --ocker-hell:#faf1df;
+  --rot:#a3312a;
+  --rot-hell:#fbeceb;
+  --kante:#d6dee1;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  color:var(--tinte);
+  background-color:var(--papier);
+  background-image:
+    repeating-linear-gradient(to right, var(--karo) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(to bottom, var(--karo) 0 1px, transparent 1px 24px);
+  font-family:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  font-size:17px;
+  line-height:1.62;
+}
+.blatt{max-width:63rem;margin:0 auto;padding:0 1.25rem 5rem}
+h1,h2,h3{font-family:"Bitter", Georgia, serif;line-height:1.2;margin:0}
+h1{font-size:2.4rem;font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:600}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:.7em 0;max-width:62ch}
+code, kbd{font-family:"JetBrains Mono", ui-monospace, "Courier New", monospace;font-size:.92em}
+p code, li code, td code{background:#eef2f3;padding:.08em .32em;border-radius:3px}
+
+.kopf{padding:3rem 0 1.5rem}
+.kopf p{color:var(--tinte-leise);font-size:1.05rem;max-width:52ch}
+.eckdaten{display:flex;flex-wrap:wrap;gap:0 2.2rem;margin:1.4rem 0 0;padding:0;list-style:none;
+  font-size:.9rem;color:var(--tinte-leise);border-top:1px solid var(--kante);padding-top:.8rem}
+.eckdaten b{color:var(--tinte);font-weight:400}
+
+.aufmacher{display:grid;grid-template-columns:minmax(0,1fr) 16rem;gap:1.5rem;align-items:center;
+  background:#fff;border:1px solid var(--kante);border-radius:2px;padding:1.4rem;margin:1.5rem 0 2.5rem;
+  box-shadow:0 1px 0 var(--karo-stark)}
+.aufmacher svg{width:100%;height:auto;display:block}
+.bauplan{border:2px solid var(--tinte);border-radius:2px;padding:.9rem 1rem;background:var(--ocker-hell)}
+.bauplan .zeile{font-family:"JetBrains Mono",monospace;font-size:.85rem;color:var(--ocker)}
+.bauplan .aufruf{font-family:"JetBrains Mono",monospace;font-size:1.15rem;font-weight:700;
+  margin-top:.45rem;color:var(--tinte)}
+.bauplan .notiz{font-size:.82rem;color:var(--tinte-leise);margin-top:.6rem;line-height:1.35}
+
+.merke{border-left:4px solid var(--gruen);background:var(--gruen-hell);padding:.9rem 1.1rem;margin:1.5rem 0}
+.merke h3{color:var(--gruen);margin-bottom:.3rem}
+.merke p{margin:.35em 0}
+
+.aufgabe{position:relative;background:#fff;border:1px solid var(--kante);border-radius:2px;
+  padding:1.5rem 1.6rem;margin:1.6rem 0;box-shadow:0 1px 0 var(--karo-stark)}
+.aufgabe > h2{margin-bottom:.2rem}
+.marke{position:absolute;left:-3.6rem;top:1.5rem;font-family:"JetBrains Mono",monospace;
+  font-size:.8rem;color:var(--tinte-leise);border:1px solid var(--kante);background:var(--papier);
+  padding:.1rem .45rem;border-radius:2px}
+@media (max-width:75rem){.marke{position:static;display:inline-block;margin-bottom:.5rem}}
+.afb{font-size:.78rem;color:var(--tinte-leise);font-family:"JetBrains Mono",monospace}
+
+pre{background:#0f1c24;color:#e8eef1;padding:1rem 1.1rem;border-radius:2px;overflow-x:auto;
+  font-family:"JetBrains Mono",monospace;font-size:.88rem;line-height:1.65;margin:1rem 0}
+pre.klein{font-size:.82rem;padding:.8rem .9rem}
+pre .kom{color:#8fa3ad}
+pre .var{color:#f0c07a}
+pre .sw{color:#8ad4b8}
+pre .zahl{color:#e4a0a0}
+pre .nr{color:#5d7280;user-select:none}
+
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.94rem}
+th,td{border:1px solid var(--kante);padding:.45rem .6rem;text-align:left;vertical-align:middle}
+th{background:#f1f5f6;font-weight:400;font-size:.85rem;color:var(--tinte-leise)}
+td input{width:100%}
+
+input.eingabe{font-family:"JetBrains Mono",monospace;font-size:.95rem;padding:.35rem .5rem;
+  border:1px solid var(--kante);border-radius:2px;background:#fbfdfd;color:var(--tinte);min-width:5rem}
+input.eingabe:focus-visible,button:focus-visible{outline:3px solid var(--gruen);outline-offset:2px}
+input.richtig{border-color:var(--gruen);background:var(--gruen-hell)}
+input.falsch{border-color:var(--rot);background:var(--rot-hell)}
+.ablauf{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:1rem 0}
+.ablauf input{min-width:3.4rem;width:3.4rem;text-align:center}
+.ablauf .pfeil{color:var(--tinte-leise)}
+
+.optionen{display:grid;gap:.5rem;margin:1rem 0;padding:0;list-style:none}
+.option{display:flex;gap:.7rem;align-items:flex-start;width:100%;text-align:left;
+  font:inherit;color:inherit;background:#fff;border:1px solid var(--kante);border-radius:2px;
+  padding:.6rem .8rem;cursor:pointer}
+.option:hover{border-color:var(--tinte-leise)}
+.option .kuerzel{font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--tinte-leise);
+  border:1px solid var(--kante);border-radius:2px;padding:0 .35rem;flex:none;margin-top:.15rem}
+.option.richtig{border-color:var(--gruen);background:var(--gruen-hell)}
+.option.richtig .kuerzel{border-color:var(--gruen);color:var(--gruen)}
+.option.falsch{border-color:var(--rot);background:var(--rot-hell)}
+.option.falsch .kuerzel{border-color:var(--rot);color:var(--rot)}
+.option pre{margin:0;width:100%}
+.quelltexte .option{flex-direction:column;gap:.4rem}
+
+.zielbild{display:grid;grid-template-columns:11rem minmax(0,1fr);gap:1.1rem;align-items:center;
+  border:1px solid var(--kante);border-radius:2px;padding:.9rem 1rem;margin:1rem 0;background:#fbfdfd}
+.zielbild svg{width:100%;height:auto}
+.zielbild p{margin:0;font-size:.94rem}
+
+button{font-family:inherit}
+.pruefen{font-size:.92rem;background:var(--tinte);color:#fff;border:none;border-radius:2px;
+  padding:.5rem 1rem;cursor:pointer}
+.pruefen:hover{background:var(--gruen)}
+.rueckmeldung{display:none;margin-top:1rem;padding:.8rem 1rem;border-left:4px solid var(--gruen);
+  background:var(--gruen-hell);font-size:.95rem}
+.rueckmeldung.sichtbar{display:block}
+.rueckmeldung.offen{border-left-color:var(--ocker);background:var(--ocker-hell)}
+.rueckmeldung p{margin:.3em 0}
+
+.leiste{position:sticky;top:0;z-index:5;background:rgba(252,252,250,.93);
+  backdrop-filter:blur(4px);border-bottom:1px solid var(--kante);padding:.5rem 0}
+.leiste .inhalt{max-width:63rem;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;
+  gap:1rem;justify-content:space-between;font-size:.9rem}
+.balken{flex:1;height:6px;background:var(--karo);border-radius:3px;overflow:hidden;max-width:22rem}
+.balken span{display:block;height:100%;width:0;background:var(--gruen);transition:width .3s ease}
+.stand{font-family:"JetBrains Mono",monospace;font-size:.85rem;white-space:nowrap}
+.alles-zeigen{font-size:.82rem;background:none;border:1px solid var(--kante);border-radius:2px;
+  padding:.25rem .6rem;cursor:pointer;color:var(--tinte-leise)}
+.alles-zeigen:hover{border-color:var(--tinte-leise);color:var(--tinte)}
+
+.checkliste{list-style:none;padding:0;margin:1rem 0}
+.checkliste li{display:flex;gap:.7rem;align-items:flex-start;padding:.35rem 0;border-bottom:1px dashed var(--kante)}
+.checkliste input{margin-top:.45rem;accent-color:var(--gruen);width:1.05rem;height:1.05rem}
+
+footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--kante);
+  font-size:.85rem;color:var(--tinte-leise)}
+footer a{color:var(--gruen)}
+footer ul{padding-left:1.1rem}
+
+@media (max-width:44rem){
+  body{font-size:16px}
+  h1{font-size:1.9rem}
+  .aufmacher{grid-template-columns:1fr}
+  .zielbild{grid-template-columns:1fr}
+  .aufgabe{padding:1.1rem}
+}
+@media print{
+  body{background:#fff}
+  .leiste,.pruefen,.alles-zeigen{display:none}
+  .rueckmeldung{display:block}
+  .aufgabe{break-inside:avoid;box-shadow:none}
+  pre{background:#fff;color:#000;border:1px solid #999}
+  pre .kom,pre .var,pre .sw,pre .zahl,pre .nr{color:#000}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="leiste">
+  <div class="inhalt">
+    <div class="balken"><span id="balken"></span></div>
+    <span class="stand" id="stand">Selbstkontrolle</span>
+    <button class="alles-zeigen" id="alles">Lösungen einblenden</button>
+  </div>
+</div>
+
+<div class="blatt">
+
+<header class="kopf">
+  <h1>Ein Bauplan, viele Aufrufe</h1>
+  <p>Eine Funktion ist ein Stück Programm, das einen Namen bekommt. Beim Aufruf springt die
+     Abarbeitung in die Funktion hinein, erledigt dort die Arbeit und kehrt anschließend genau
+     hinter die Aufrufstelle zurück. Über Parameter entscheidet die Aufrufstelle, mit welchen
+     Werten gearbeitet wird.</p>
+  <ul class="eckdaten">
+    <li><b>Informatik Grundkurs, Jahrgang 12</b></li>
+  </ul>
+</header>
+
+<div class="aufmacher">
+  <svg id="aufmacher-svg" viewBox="0 0 460 260" role="img"
+       aria-label="Ein Bahnplan mit drei Bahnen, gezeichnet durch drei Aufrufe derselben Funktion.">
+    <g id="ovale" fill="none" stroke="#0f6a58" stroke-width="2.5"></g>
+  </svg>
+  <div class="bauplan">
+    <div class="zeile">def zeichne_bahn(radius):</div>
+    <div class="aufruf" id="aufrufzeile">zeichne_bahn(60)</div>
+    <div class="notiz">Der Bauplan steht einmal im Programm. Drei Aufrufe mit verschiedenen Werten
+      erzeugen drei verschiedene Bahnen.</div>
+  </div>
+</div>
+
+<div class="merke">
+  <h3>Vorab: Definition und Aufruf sind zweierlei</h3>
+  <p>Die Zeilen unter <code>def</code> werden beim Programmstart nur gelesen und unter dem
+     Funktionsnamen abgelegt. Ausgeführt werden sie erst, wenn der Name mit Klammern dahinter
+     auftaucht.</p>
+  <p>Die Werte in den Klammern des Aufrufs heißen Argumente, die Namen in den Klammern der
+     Definition heißen Parameter. Zugeordnet wird der Reihe nach: Das erste Argument landet im
+     ersten Parameter.</p>
+</div>
+
+<main>
+
+<!-- A1 -->
+<section class="aufgabe" data-aufgabe="1">
+  <span class="marke">A1</span>
+  <h2>Was ein Aufruf auslöst</h2>
+  <p class="afb">Anforderungsbereich I</p>
+  <p>Im Programm steht die Definition <code>def zeichne_bahn(radius):</code>. Später folgt die
+     Zeile <code>zeichne_bahn(60)</code>. Kreuze die zutreffende Beschreibung an.</p>
+  <ul class="optionen" data-loesung="c" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Die Zeile legt eine zweite Funktion mit dem Wert 60 an.</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Die Zeile setzt den Parameter <code>radius</code> dauerhaft auf 60. Ausgeführt wird
+      die Funktion erst am Programmende.</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Die Abarbeitung springt in die Funktion, <code>radius</code> hat dort den Wert 60,
+      und nach der letzten Zeile der Funktion geht es hinter der Aufrufstelle weiter.</span></button></li>
+    <li><button class="option" data-wert="d"><span class="kuerzel">D</span>
+      <span>Die Zeile hat keine Wirkung, weil <code>zeichne_bahn</code> bereits weiter oben
+      steht.</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist C.</b> Der Aufruf unterbricht den laufenden Ablauf, übergibt das Argument an
+    den Parameter und setzt danach an der Aufrufstelle fort. Genau diese Rückkehr macht es
+    möglich, dieselbe Funktion mehrfach an verschiedenen Stellen zu verwenden.</p>
+  </div>
+  <button class="pruefen">Antwort prüfen</button>
+</section>
+
+<!-- A2 -->
+<section class="aufgabe" data-aufgabe="2">
+  <span class="marke">A2</span>
+  <h2>Den Ablauf verfolgen</h2>
+  <p class="afb">Anforderungsbereich II</p>
+<pre><span class="nr">1</span>  <span class="sw">def</span> kopf(<span class="var">text</span>):
+<span class="nr">2</span>      print(<span class="zahl">"---"</span>, <span class="var">text</span>, <span class="zahl">"---"</span>)
+<span class="nr">3</span>
+<span class="nr">4</span>  <span class="sw">def</span> bahn(<span class="var">nummer</span>):
+<span class="nr">5</span>      print(<span class="zahl">"Bahn"</span>, <span class="var">nummer</span>)
+<span class="nr">6</span>
+<span class="nr">7</span>  kopf(<span class="zahl">"Start"</span>)
+<span class="nr">8</span>  bahn(<span class="zahl">1</span>)
+<span class="nr">9</span>  bahn(<span class="zahl">2</span>)</pre>
+  <p>Trage die Zeilennummern in der Reihenfolge ein, in der die Befehle tatsächlich abgearbeitet
+     werden. Beginne beim ersten Aufruf.</p>
+  <div class="ablauf">
+    <input class="eingabe" data-loesung="7" inputmode="numeric" aria-label="erste ausgeführte Zeile">
+    <span class="pfeil">→</span>
+    <input class="eingabe" data-loesung="2" inputmode="numeric" aria-label="zweite ausgeführte Zeile">
+    <span class="pfeil">→</span>
+    <input class="eingabe" data-loesung="8" inputmode="numeric" aria-label="dritte ausgeführte Zeile">
+    <span class="pfeil">→</span>
+    <input class="eingabe" data-loesung="5" inputmode="numeric" aria-label="vierte ausgeführte Zeile">
+    <span class="pfeil">→</span>
+    <input class="eingabe" data-loesung="9" inputmode="numeric" aria-label="fünfte ausgeführte Zeile">
+    <span class="pfeil">→</span>
+    <input class="eingabe" data-loesung="5" inputmode="numeric" aria-label="sechste ausgeführte Zeile">
+  </div>
+  <p>Wie oft wird Zeile 5 insgesamt ausgeführt?
+     <input class="eingabe" data-loesung="2" inputmode="numeric" aria-label="Anzahl der Ausführungen von Zeile 5"></p>
+  <p>Warum erscheint beim Programmstart noch keine Ausgabe, obwohl <code>print</code> in Zeile 2
+     steht?</p>
+  <ul class="optionen" data-loesung="b" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Weil <code>print</code> in einer Funktion nicht erlaubt ist.</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Weil Zeile 2 zum Bauplan gehört. Python merkt sich die Zeilen unter dem Namen
+      <code>kopf</code> und führt sie erst beim Aufruf aus.</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Weil die Ausgabe erst am Programmende gesammelt erscheint.</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Reihenfolge:</b> 7, 2, 8, 5, 9, 5. Zeile 5 wird zweimal ausgeführt, einmal je Aufruf von
+    <code>bahn</code>.</p>
+    <p><b>Richtig ist B.</b> Eine <code>def</code>-Zeile richtet den Namen ein, mehr nicht. Der
+    eingerückte Block darunter wartet, bis er aufgerufen wird. Deshalb kann eine Funktion auch
+    definiert sein, ohne dass sie jemals läuft.</p>
+  </div>
+  <button class="pruefen">Antworten prüfen</button>
+</section>
+
+<!-- A3 -->
+<section class="aufgabe" data-aufgabe="3">
+  <span class="marke">A3</span>
+  <h2>Reihenfolge der Argumente</h2>
+  <p class="afb">Anforderungsbereich II</p>
+<pre><span class="nr">1</span>  <span class="sw">def</span> zeichne_bahn(<span class="var">radius</span>, <span class="var">gerade</span>):
+<span class="nr">2</span>      penup()
+<span class="nr">3</span>      goto(-<span class="var">gerade</span> / <span class="zahl">2</span>, -<span class="var">radius</span>)
+<span class="nr">4</span>      setheading(<span class="zahl">0</span>)
+<span class="nr">5</span>      pendown()
+<span class="nr">6</span>      forward(<span class="var">gerade</span>)
+<span class="nr">7</span>      circle(<span class="var">radius</span>, <span class="zahl">180</span>)
+<span class="nr">8</span>      forward(<span class="var">gerade</span>)
+<span class="nr">9</span>      circle(<span class="var">radius</span>, <span class="zahl">180</span>)
+<span class="nr">10</span>
+<span class="nr">11</span> zeichne_bahn(<span class="zahl">300</span>, <span class="zahl">60</span>)</pre>
+  <p>Gewollt war eine Bahn mit Radius 60 und einer Geraden von 300 Schritten. Was passiert
+     stattdessen?</p>
+  <ul class="optionen" data-loesung="c" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Python meldet einen Fehler, weil die Werte nicht zu den Namen passen.</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Python erkennt an der Größe der Zahlen, welche wohin gehört, und zeichnet das
+      Gewünschte.</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Python ordnet der Reihe nach zu. Es gibt keine Fehlermeldung, aber die gezeichnete
+      Figur ist falsch.</span></button></li>
+  </ul>
+  <p>Welchen Wert hat <code>radius</code> während dieses Aufrufs?
+     <input class="eingabe" data-loesung="300" inputmode="numeric" aria-label="Wert von radius"></p>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist C.</b> Die Zuordnung erfolgt allein über die Position: Das erste Argument
+    geht in den ersten Parameter. <code>radius</code> erhält also 300, <code>gerade</code>
+    erhält 60.</p>
+    <p>Fehler dieser Art sind besonders unangenehm, weil das Programm fehlerfrei durchläuft.
+    Sichtbar wird der Fehler nur an der Zeichnung. Ein Test mit bekannten Werten gehört deshalb
+    zu jeder neuen Funktion.</p>
+  </div>
+  <button class="pruefen">Antworten prüfen</button>
+</section>
+
+<!-- A4 -->
+<section class="aufgabe" data-aufgabe="4">
+  <span class="marke">A4</span>
+  <h2>Den passenden Aufruf wählen</h2>
+  <p class="afb">Anforderungsbereich II</p>
+  <div class="zielbild">
+    <svg id="zielbild-svg" viewBox="0 0 240 170" role="img"
+         aria-label="Bahnplan mit drei ineinanderliegenden Bahnen.">
+      <g id="zielovale" fill="none" stroke="#16242e" stroke-width="2"></g>
+    </svg>
+    <p>Diese Zeichnung soll entstehen: drei Bahnen mit den Radien 60, 80 und 100. Die Funktion
+      <code>zeichne_bahn(radius)</code> ist bereits fertig und zeichnet eine einzelne Bahn.
+      Welcher Aufrufteil erzeugt das Bild?</p>
+  </div>
+  <ul class="optionen quelltexte" data-loesung="b" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+<pre class="klein"><span class="var">radius</span> = <span class="zahl">60</span>
+<span class="sw">for</span> <span class="var">i</span> <span class="sw">in</span> range(<span class="zahl">3</span>):
+    zeichne_bahn(<span class="var">radius</span>)</pre></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+<pre class="klein"><span class="var">radius</span> = <span class="zahl">60</span>
+<span class="sw">for</span> <span class="var">i</span> <span class="sw">in</span> range(<span class="zahl">3</span>):
+    zeichne_bahn(<span class="var">radius</span>)
+    <span class="var">radius</span> = <span class="var">radius</span> + <span class="zahl">20</span></pre></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+<pre class="klein"><span class="var">radius</span> = <span class="zahl">60</span>
+<span class="sw">for</span> <span class="var">i</span> <span class="sw">in</span> range(<span class="zahl">3</span>):
+    zeichne_bahn(<span class="var">radius</span>)
+    <span class="var">radius</span> + <span class="zahl">20</span></pre></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist B.</b> Die Funktion wird dreimal aufgerufen, und zwischen den Aufrufen
+    bekommt <code>radius</code> einen neuen Wert. Beim ersten Aufruf ist das Argument 60, beim
+    zweiten 80, beim dritten 100.</p>
+    <p>In A bleibt <code>radius</code> unverändert, alle drei Bahnen liegen aufeinander. In C wird
+    zwar gerechnet, das Ergebnis aber nirgends gespeichert, weil die Zuweisung fehlt. Auch hier
+    entsteht dreimal dieselbe Bahn.</p>
+  </div>
+  <button class="pruefen">Antwort prüfen</button>
+</section>
+
+<!-- A5 -->
+<section class="aufgabe" data-aufgabe="5">
+  <span class="marke">A5</span>
+  <h2>Wie weit ein Parameter reicht</h2>
+  <p class="afb">Anforderungsbereich II</p>
+<pre><span class="nr">1</span>  <span class="sw">from</span> turtle <span class="sw">import</span> *
+<span class="nr">2</span>
+<span class="nr">3</span>  <span class="sw">def</span> zeichne_bahn(<span class="var">radius</span>):
+<span class="nr">4</span>      forward(<span class="var">radius</span>)
+<span class="nr">5</span>
+<span class="nr">6</span>  zeichne_bahn(<span class="zahl">80</span>)
+<span class="nr">7</span>  print(<span class="var">radius</span>)</pre>
+  <p>Was geschieht in Zeile 7?</p>
+  <ul class="optionen" data-loesung="b" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Es wird 80 ausgegeben, denn der Wert bleibt nach dem Aufruf erhalten.</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Das Programm bricht mit einer Fehlermeldung ab, weil <code>radius</code> nur
+      innerhalb der Funktion existiert.</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Es wird 0 ausgegeben, weil der Parameter beim Verlassen der Funktion zurückgesetzt
+      wird.</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist B.</b> Ein Parameter verhält sich wie eine lokale Variable. Er entsteht beim
+    Aufruf, existiert nur im Rumpf der Funktion und ist danach unbekannt.</p>
+    <p>Das ist erwünscht: Die Funktion kann deshalb überall im Programm verwendet werden, ohne
+    dass ihre inneren Namen mit denen des Hauptprogramms kollidieren.</p>
+  </div>
+  <button class="pruefen">Antwort prüfen</button>
+</section>
+
+<!-- A6 -->
+<section class="aufgabe" data-aufgabe="6">
+  <span class="marke">A6</span>
+  <h2>Fehler finden</h2>
+  <p class="afb">Anforderungsbereich II</p>
+  <p>Das Fenster öffnet sich, bleibt aber leer.</p>
+<pre><span class="nr">1</span>  <span class="sw">from</span> turtle <span class="sw">import</span> *
+<span class="nr">2</span>
+<span class="nr">3</span>  <span class="sw">def</span> zeichne_bahn(<span class="var">radius</span>):
+<span class="nr">4</span>      penup()
+<span class="nr">5</span>      goto(-<span class="zahl">150</span>, -<span class="var">radius</span>)
+<span class="nr">6</span>      pendown()
+<span class="nr">7</span>      forward(<span class="zahl">300</span>)
+<span class="nr">8</span>
+<span class="nr">9</span>  zeichne_bahn
+<span class="nr">10</span> done()</pre>
+  <p>Fehlerhafte Zeile: <input class="eingabe" data-loesung="9" inputmode="numeric" aria-label="Zeilennummer"></p>
+  <p>Schreibe die Zeile so, dass eine Bahn mit dem Radius 60 gezeichnet wird:<br>
+     <input class="eingabe" data-loesung="zeichne_bahn(60)|zeichne_bahn( 60 )|zeichne_bahn(60.0)"
+            style="min-width:16rem" aria-label="korrigierte Zeile"></p>
+  <div class="rueckmeldung">
+    <p>In Zeile 9 fehlen Klammern und Argument. Ohne Klammern wird die Funktion nicht aufgerufen,
+    die Zeile nennt nur ihren Namen. Python meldet dabei nichts, gezeichnet wird aber auch nichts.</p>
+    <p>Korrekt lautet die Zeile <code>zeichne_bahn(60)</code>. Merke dir dieses Fehlerbild: Ein
+    Programm, das fehlerfrei durchläuft und trotzdem nichts tut, hat fast immer einen fehlenden
+    oder falsch eingerückten Aufruf.</p>
+  </div>
+  <button class="pruefen">Antworten prüfen</button>
+</section>
+
+<!-- A7 -->
+<section class="aufgabe" data-aufgabe="7">
+  <span class="marke">A7</span>
+  <h2>Passen Aufruf und Definition zusammen?</h2>
+  <p class="afb">Anforderungsbereich II</p>
+<pre><span class="nr">1</span>  <span class="sw">def</span> zeichne_bahn(<span class="var">radius</span>, <span class="var">gerade</span>, <span class="var">farbe</span>):
+<span class="nr">2</span>      pencolor(<span class="var">farbe</span>)
+<span class="nr">3</span>      forward(<span class="var">gerade</span>)
+<span class="nr">4</span>      circle(<span class="var">radius</span>, <span class="zahl">180</span>)
+<span class="nr">5</span>
+<span class="nr">6</span>  zeichne_bahn(<span class="zahl">60</span>, <span class="zahl">300</span>)</pre>
+  <p>Wie viele Argumente erwartet die Funktion?
+     <input class="eingabe" data-loesung="3" inputmode="numeric" aria-label="Anzahl der erwarteten Argumente"></p>
+  <p>Was passiert beim Aufruf in Zeile 6?</p>
+  <ul class="optionen" data-loesung="c" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Der fehlende Wert wird automatisch auf 0 gesetzt.</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Die Funktion läuft, die Zeile mit <code>pencolor</code> wird einfach
+      übersprungen.</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Das Programm bricht ab, weil ein Argument fehlt.</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist C.</b> Anzahl und Reihenfolge der Argumente müssen zur Definition passen.
+    Fehlt ein Argument, bricht das Programm mit einem <code>TypeError</code> ab und nennt den
+    Namen des unversorgten Parameters.</p>
+    <p>Diese Meldung ist hilfreich: Sie zeigt direkt, welcher Parameter leer geblieben ist.</p>
+  </div>
+  <button class="pruefen">Antworten prüfen</button>
+</section>
+
+<section class="aufgabe">
+  <span class="marke">Ende</span>
+  <h2>Selbsteinschätzung</h2>
+  <p>Hake ab, was du ohne Nachschlagen erklären kannst. Was offen bleibt, nimmst du mit in die
+     nächste Stunde.</p>
+  <ul class="checkliste">
+    <li><input type="checkbox" id="c1"><label for="c1">Ich kann Definition und Aufruf einer
+      Funktion unterscheiden.</label></li>
+    <li><input type="checkbox" id="c2"><label for="c2">Ich kann den Programmablauf über mehrere
+      Aufrufe hinweg verfolgen und sagen, wo es nach der Funktion weitergeht.</label></li>
+    <li><input type="checkbox" id="c3"><label for="c3">Ich weiß, was Parameter und Argumente sind
+      und wie sie einander zugeordnet werden.</label></li>
+    <li><input type="checkbox" id="c4"><label for="c4">Ich kann dieselbe Funktion mit
+      verschiedenen Argumenten aufrufen, um verschiedene Figuren zu zeichnen.</label></li>
+    <li><input type="checkbox" id="c5"><label for="c5">Ich kann erklären, warum ein Parameter
+      außerhalb der Funktion nicht bekannt ist.</label></li>
+    <li><input type="checkbox" id="c6"><label for="c6">Ich erkenne einen fehlenden Aufruf und
+      eine falsche Anzahl von Argumenten im Quelltext.</label></li>
+  </ul>
+</section>
+
+</main>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Bahn-Oval als Punktfolge ---------- */
+  function ovalPunkte(radius, gerade, n){
+    var pts=[], i, t, cx;
+    pts.push([-gerade/2, radius]);
+    pts.push([gerade/2, radius]);
+    cx = gerade/2;
+    for(i=1;i<=n;i++){
+      t = Math.PI*i/n;
+      pts.push([cx + radius*Math.sin(t), radius*Math.cos(t)]);
+    }
+    pts.push([-gerade/2, -radius]);
+    cx = -gerade/2;
+    for(i=1;i<=n;i++){
+      t = Math.PI*i/n;
+      pts.push([cx - radius*Math.sin(t), -radius*Math.cos(t)]);
+    }
+    return pts;
+  }
+  function grenzen(listen){
+    var minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+    listen.forEach(function(l){ l.forEach(function(p){
+      if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0];
+      if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1];
+    });});
+    return {minX:minX,maxX:maxX,minY:minY,maxY:maxY};
+  }
+  function einpassenGruppe(listen, breite, hoehe, rand){
+    var g = grenzen(listen);
+    var s = Math.min((breite-2*rand)/(g.maxX-g.minX), (hoehe-2*rand)/(g.maxY-g.minY));
+    var ox = rand + ((breite-2*rand)-(g.maxX-g.minX)*s)/2;
+    var oy = rand + ((hoehe-2*rand)-(g.maxY-g.minY)*s)/2;
+    return listen.map(function(l){
+      return l.map(function(p){ return [(p[0]-g.minX)*s+ox, (p[1]-g.minY)*s+oy]; });
+    });
+  }
+  function alsPfad(punkte){
+    return punkte.map(function(p,i){
+      return (i===0?"M ":"L ")+p[0].toFixed(1)+" "+p[1].toFixed(1);
+    }).join(" ") + " Z";
+  }
+  function ovaleZeichnen(gruppeId, radien, gerade, breite, hoehe, rand){
+    var ziel = document.getElementById(gruppeId);
+    if(!ziel) return [];
+    var rohe = radien.map(function(r){ return ovalPunkte(r, gerade, 40); });
+    var fertig = einpassenGruppe(rohe, breite, hoehe, rand);
+    var pfade = [];
+    fertig.forEach(function(pts){
+      var el = document.createElementNS("http://www.w3.org/2000/svg","path");
+      el.setAttribute("d", alsPfad(pts));
+      ziel.appendChild(el);
+      pfade.push(el);
+    });
+    return pfade;
+  }
+
+  /* ---------- Aufmacher: drei Aufrufe nacheinander ---------- */
+  var radien = [60, 80, 100];
+  var pfade = ovaleZeichnen("ovale", radien, 300, 460, 260, 16);
+  var aufrufzeile = document.getElementById("aufrufzeile");
+  var langsam = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if(pfade.length && !langsam){
+    pfade.forEach(function(el){
+      var l = el.getTotalLength();
+      el.style.strokeDasharray = l;
+      el.style.strokeDashoffset = l;
+    });
+    var index = 0;
+    function naechster(){
+      if(index >= pfade.length) return;
+      var el = pfade[index];
+      var laenge = el.getTotalLength();
+      aufrufzeile.textContent = "zeichne_bahn(" + radien[index] + ")";
+      var start = null, dauer = 1100;
+      requestAnimationFrame(function anim(t){
+        if(start===null) start=t;
+        var p = Math.min((t-start)/dauer, 1);
+        el.style.strokeDashoffset = laenge*(1-p);
+        if(p<1){ requestAnimationFrame(anim); }
+        else { index++; setTimeout(naechster, 220); }
+      });
+    }
+    naechster();
+  } else if(pfade.length){
+    aufrufzeile.textContent = "zeichne_bahn(100)";
+  }
+
+  /* ---------- Zielbild in Aufgabe 4 ---------- */
+  ovaleZeichnen("zielovale", [60, 80, 100], 300, 240, 170, 10);
+
+  /* ---------- Auswertung ---------- */
+  function normal(text){
+    return text.toLowerCase().trim()
+      .replace(/["'`]/g,"").replace(/,/g,".")
+      .replace(/\s+/g," ").replace(/\.0+$/,"");
+  }
+  function stimmt(eingabe, loesung){
+    return loesung.split("|").map(normal).indexOf(normal(eingabe)) !== -1;
+  }
+
+  document.addEventListener("click", function(ev){
+    var opt = ev.target.closest ? ev.target.closest(".option") : null;
+    if(opt){
+      var liste = opt.closest(".optionen");
+      Array.prototype.forEach.call(liste.querySelectorAll(".option"), function(o){
+        o.classList.remove("richtig","falsch");
+      });
+      opt.classList.add(opt.getAttribute("data-wert")===liste.getAttribute("data-loesung")?"richtig":"falsch");
+      liste.setAttribute("data-beantwortet","ja");
+      standAktualisieren();
+      return;
+    }
+    var knopf = ev.target.closest ? ev.target.closest(".pruefen") : null;
+    if(knopf){
+      var aufgabe = knopf.closest(".aufgabe");
+      Array.prototype.forEach.call(aufgabe.querySelectorAll("input.eingabe"), function(feld){
+        feld.classList.remove("richtig","falsch");
+        if(feld.value.trim()==="") return;
+        feld.classList.add(stimmt(feld.value, feld.getAttribute("data-loesung"))?"richtig":"falsch");
+      });
+      var offen = aufgabe.querySelectorAll(".optionen:not([data-beantwortet])").length
+                + Array.prototype.filter.call(aufgabe.querySelectorAll("input.eingabe"),
+                    function(f){return f.value.trim()==="";}).length;
+      var rueck = aufgabe.querySelector(".rueckmeldung");
+      if(rueck){
+        rueck.classList.add("sichtbar");
+        rueck.classList.toggle("offen", offen>0);
+      }
+      standAktualisieren();
+    }
+  });
+
+  var gesamtPunkte = document.querySelectorAll("input.eingabe").length
+                   + document.querySelectorAll(".optionen").length;
+
+  function standAktualisieren(){
+    var richtig = document.querySelectorAll("input.eingabe.richtig").length
+                + document.querySelectorAll(".option.richtig").length;
+    document.getElementById("stand").textContent =
+      richtig + " von " + gesamtPunkte + " Teilantworten richtig";
+    document.getElementById("balken").style.width = (richtig/gesamtPunkte*100) + "%";
+  }
+  document.getElementById("stand").textContent = "0 von " + gesamtPunkte + " Teilantworten richtig";
+
+  var knopfAlle = document.getElementById("alles");
+  var offenSichtbar = false;
+  knopfAlle.addEventListener("click", function(){
+    offenSichtbar = !offenSichtbar;
+    Array.prototype.forEach.call(document.querySelectorAll(".rueckmeldung"), function(r){
+      r.classList.toggle("sichtbar", offenSichtbar);
+    });
+    knopfAlle.textContent = offenSichtbar ? "Lösungen ausblenden" : "Lösungen einblenden";
+  });
+})();
+</script>
+</body>
+</html>

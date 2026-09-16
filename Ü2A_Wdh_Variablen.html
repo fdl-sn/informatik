@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Variablen sichtbar machen – Übungen mit Python-Turtle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papier:#fcfcfa;
+  --karo:#e2e8ea;
+  --karo-stark:#cfd9dd;
+  --tinte:#16242e;
+  --tinte-leise:#5b6a72;
+  --gruen:#0f6a58;
+  --gruen-hell:#e6f1ee;
+  --ocker:#9a6510;
+  --ocker-hell:#faf1df;
+  --rot:#a3312a;
+  --rot-hell:#fbeceb;
+  --kante:#d6dee1;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  color:var(--tinte);
+  background-color:var(--papier);
+  background-image:
+    repeating-linear-gradient(to right, var(--karo) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(to bottom, var(--karo) 0 1px, transparent 1px 24px);
+  font-family:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  font-size:17px;
+  line-height:1.62;
+}
+.blatt{max-width:63rem;margin:0 auto;padding:0 1.25rem 5rem}
+h1,h2,h3{font-family:"Bitter", Georgia, serif;line-height:1.2;margin:0}
+h1{font-size:2.4rem;font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:600}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:.7em 0;max-width:62ch}
+code, kbd{font-family:"JetBrains Mono", ui-monospace, "Courier New", monospace;font-size:.92em}
+p code, li code, td code{background:#eef2f3;padding:.08em .32em;border-radius:3px}
+
+/* Kopf */
+.kopf{padding:3rem 0 1.5rem}
+.kopf p{color:var(--tinte-leise);font-size:1.05rem;max-width:52ch}
+.eckdaten{display:flex;flex-wrap:wrap;gap:0 2.2rem;margin:1.4rem 0 0;padding:0;list-style:none;
+  font-size:.9rem;color:var(--tinte-leise);border-top:1px solid var(--kante);padding-top:.8rem}
+.eckdaten b{color:var(--tinte);font-weight:400}
+
+/* Aufmacher */
+.aufmacher{display:grid;grid-template-columns:minmax(0,1fr) 15rem;gap:1.5rem;align-items:center;
+  background:#fff;border:1px solid var(--kante);border-radius:2px;padding:1.4rem;margin:1.5rem 0 2.5rem;
+  box-shadow:0 1px 0 var(--karo-stark)}
+.aufmacher svg{width:100%;height:auto;display:block}
+.speicher{border:2px solid var(--tinte);border-radius:2px;padding:.9rem 1rem;background:var(--ocker-hell)}
+.speicher .name{font-family:"JetBrains Mono",monospace;font-size:.85rem;color:var(--ocker)}
+.speicher .wert{font-family:"Bitter",serif;font-size:2.6rem;font-weight:700;line-height:1;margin-top:.2rem}
+.speicher .notiz{font-size:.82rem;color:var(--tinte-leise);margin-top:.5rem;line-height:1.35}
+
+/* Merkkasten */
+.merke{border-left:4px solid var(--gruen);background:var(--gruen-hell);padding:.9rem 1.1rem;margin:1.5rem 0}
+.merke h3{color:var(--gruen);margin-bottom:.3rem}
+.merke p{margin:.35em 0}
+
+/* Aufgaben */
+.aufgabe{position:relative;background:#fff;border:1px solid var(--kante);border-radius:2px;
+  padding:1.5rem 1.6rem;margin:1.6rem 0;box-shadow:0 1px 0 var(--karo-stark)}
+.aufgabe > h2{margin-bottom:.2rem}
+.marke{position:absolute;left:-3.6rem;top:1.5rem;font-family:"JetBrains Mono",monospace;
+  font-size:.8rem;color:var(--tinte-leise);border:1px solid var(--kante);background:var(--papier);
+  padding:.1rem .45rem;border-radius:2px}
+@media (max-width:75rem){.marke{position:static;display:inline-block;margin-bottom:.5rem}}
+.afb{font-size:.78rem;color:var(--tinte-leise);font-family:"JetBrains Mono",monospace}
+
+/* Quelltext */
+pre{background:#0f1c24;color:#e8eef1;padding:1rem 1.1rem;border-radius:2px;overflow-x:auto;
+  font-family:"JetBrains Mono",monospace;font-size:.88rem;line-height:1.65;margin:1rem 0}
+pre .kom{color:#8fa3ad}
+pre .var{color:#f0c07a}
+pre .sw{color:#8ad4b8}
+pre .zahl{color:#e4a0a0}
+pre .nr{color:#5d7280;user-select:none}
+
+/* Tabelle */
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.94rem}
+th,td{border:1px solid var(--kante);padding:.45rem .6rem;text-align:left;vertical-align:middle}
+th{background:#f1f5f6;font-weight:400;font-size:.85rem;color:var(--tinte-leise)}
+td input{width:100%}
+
+/* Eingaben */
+input.eingabe{font-family:"JetBrains Mono",monospace;font-size:.95rem;padding:.35rem .5rem;
+  border:1px solid var(--kante);border-radius:2px;background:#fbfdfd;color:var(--tinte);min-width:5rem}
+input.eingabe:focus-visible,button:focus-visible{outline:3px solid var(--gruen);outline-offset:2px}
+input.richtig{border-color:var(--gruen);background:var(--gruen-hell)}
+input.falsch{border-color:var(--rot);background:var(--rot-hell)}
+
+/* Auswahl */
+.optionen{display:grid;gap:.5rem;margin:1rem 0;padding:0;list-style:none}
+.option{display:flex;gap:.7rem;align-items:flex-start;width:100%;text-align:left;
+  font:inherit;color:inherit;background:#fff;border:1px solid var(--kante);border-radius:2px;
+  padding:.6rem .8rem;cursor:pointer}
+.option:hover{border-color:var(--tinte-leise)}
+.option .kuerzel{font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--tinte-leise);
+  border:1px solid var(--kante);border-radius:2px;padding:0 .35rem;flex:none;margin-top:.15rem}
+.option.richtig{border-color:var(--gruen);background:var(--gruen-hell)}
+.option.richtig .kuerzel{border-color:var(--gruen);color:var(--gruen)}
+.option.falsch{border-color:var(--rot);background:var(--rot-hell)}
+.option.falsch .kuerzel{border-color:var(--rot);color:var(--rot)}
+.option svg{width:100%;height:auto}
+.figuren{grid-template-columns:repeat(3,1fr)}
+.figuren .option{flex-direction:column;gap:.4rem}
+
+/* Knöpfe und Rückmeldung */
+button{font-family:inherit}
+.pruefen{font-size:.92rem;background:var(--tinte);color:#fff;border:none;border-radius:2px;
+  padding:.5rem 1rem;cursor:pointer}
+.pruefen:hover{background:var(--gruen)}
+.rueckmeldung{display:none;margin-top:1rem;padding:.8rem 1rem;border-left:4px solid var(--gruen);
+  background:var(--gruen-hell);font-size:.95rem}
+.rueckmeldung.sichtbar{display:block}
+.rueckmeldung.offen{border-left-color:var(--ocker);background:var(--ocker-hell)}
+.rueckmeldung p{margin:.3em 0}
+
+/* Fortschritt */
+.leiste{position:sticky;top:0;z-index:5;background:rgba(252,252,250,.93);
+  backdrop-filter:blur(4px);border-bottom:1px solid var(--kante);padding:.5rem 0}
+.leiste .inhalt{max-width:63rem;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;
+  gap:1rem;justify-content:space-between;font-size:.9rem}
+.balken{flex:1;height:6px;background:var(--karo);border-radius:3px;overflow:hidden;max-width:22rem}
+.balken span{display:block;height:100%;width:0;background:var(--gruen);transition:width .3s ease}
+.stand{font-family:"JetBrains Mono",monospace;font-size:.85rem;white-space:nowrap}
+.alles-zeigen{font-size:.82rem;background:none;border:1px solid var(--kante);border-radius:2px;
+  padding:.25rem .6rem;cursor:pointer;color:var(--tinte-leise)}
+.alles-zeigen:hover{border-color:var(--tinte-leise);color:var(--tinte)}
+
+/* Checkliste */
+.checkliste{list-style:none;padding:0;margin:1rem 0}
+.checkliste li{display:flex;gap:.7rem;align-items:flex-start;padding:.35rem 0;border-bottom:1px dashed var(--kante)}
+.checkliste input{margin-top:.45rem;accent-color:var(--gruen);width:1.05rem;height:1.05rem}
+
+footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--kante);
+  font-size:.85rem;color:var(--tinte-leise)}
+footer a{color:var(--gruen)}
+footer ul{padding-left:1.1rem}
+
+@media (max-width:44rem){
+  body{font-size:16px}
+  h1{font-size:1.9rem}
+  .aufmacher{grid-template-columns:1fr}
+  .figuren{grid-template-columns:1fr}
+  .aufgabe{padding:1.1rem}
+}
+@media print{
+  body{background:#fff}
+  .leiste,.pruefen,.alles-zeigen{display:none}
+  .rueckmeldung{display:block}
+  .aufgabe{break-inside:avoid;box-shadow:none}
+  pre{background:#fff;color:#000;border:1px solid #999}
+  pre .kom,pre .var,pre .sw,pre .zahl,pre .nr{color:#000}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="leiste">
+  <div class="inhalt">
+    <div class="balken"><span id="balken"></span></div>
+    <span class="stand" id="stand">Selbstkontrolle</span>
+    <button class="alles-zeigen" id="alles">Lösungen einblenden</button>
+  </div>
+</div>
+
+<div class="blatt">
+
+<header class="kopf">
+  <h1>Variablen sichtbar machen</h1>
+  <p>Ein Variablenname zeigt auf einen Speicherplatz, und der Inhalt dieses Platzes ändert sich
+     während der Programmausführung. Die Turtle macht diese Änderungen sichtbar: Jeder neue Wert
+     wird als Strecke, Winkel oder Farbe gezeichnet.</p>
+  <ul class="eckdaten">
+    <li><b>Informatik Grundkurs, Jahrgang 12</b></li>
+    <li><b>Selbstkontrolle, keine Benotung</b></li>
+  </ul>
+</header>
+
+<div class="aufmacher">
+  <svg id="aufmacher-svg" viewBox="0 0 460 260" role="img"
+       aria-label="Eine quadratische Spirale, die von innen nach außen gezeichnet wird.">
+    <path id="spirale" fill="none" stroke="#0f6a58" stroke-width="2.5"
+          stroke-linecap="square" stroke-linejoin="miter"/>
+  </svg>
+  <div class="speicher">
+    <div class="name">laenge</div>
+    <div class="wert" id="speicherwert">8</div>
+    <div class="notiz">Derselbe Name, 22 verschiedene Werte. Jede Zeile der Spirale gehört zu genau
+      einem Wert im Speicher.</div>
+  </div>
+</div>
+
+<div class="merke">
+  <h3>Vorab: die Zuweisung von rechts nach links lesen</h3>
+  <p><code>laenge = laenge + 20</code> ist keine Gleichung. Python wertet zuerst die rechte Seite
+     mit dem aktuellen Wert aus und speichert das Ergebnis anschließend unter dem Namen links.</p>
+  <p>Der alte Wert ist danach verloren. Wer ihn noch braucht, muss ihn vorher in einer zweiten
+     Variablen sichern.</p>
+</div>
+
+<main>
+
+<!-- A1 -->
+<section class="aufgabe" data-aufgabe="1">
+  <span class="marke">A1</span>
+  <h2>Was bei einer Zuweisung passiert</h2>
+  <p class="afb">Anforderungsbereich I</p>
+  <p>Im Programm steht die Zeile <code>laenge = laenge + 20</code>. Vorher gilt
+     <code>laenge</code> ist <code>40</code>. Kreuze die zutreffende Beschreibung an.</p>
+  <ul class="optionen" data-loesung="c" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Python prüft, ob <code>laenge</code> gleich <code>laenge + 20</code> ist, und
+      meldet einen Fehler, weil das nicht stimmt.</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Es entsteht eine zweite Variable mit demselben Namen, die alte bleibt mit dem
+      Wert 40 erhalten.</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Python berechnet zuerst <code>40 + 20</code> und speichert das Ergebnis 60 unter dem
+      Namen <code>laenge</code>. Der Wert 40 ist danach nicht mehr abrufbar.</span></button></li>
+    <li><button class="option" data-wert="d"><span class="kuerzel">D</span>
+      <span>Die Zeile wirkt erst, wenn <code>laenge</code> das nächste Mal verwendet wird.</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist C.</b> Der Zuweisungsoperator <code>=</code> wertet die rechte Seite aus und
+    bindet das Ergebnis an den Namen auf der linken Seite. Der Vergleich auf Gleichheit wäre
+    <code>==</code> und würde <code>False</code> liefern.</p>
+  </div>
+  <button class="pruefen">Antwort prüfen</button>
+</section>
+
+<!-- A2 -->
+<section class="aufgabe" data-aufgabe="2">
+  <span class="marke">A2</span>
+  <h2>Werte verfolgen</h2>
+  <p class="afb">Anforderungsbereich II</p>
+  <p>Verfolge den Wert von <code>laenge</code> Schritt für Schritt und trage die Zahlen ein.
+     Die Turtle startet mit der Blickrichtung nach Osten.</p>
+<pre><span class="nr">1</span>  <span class="sw">from</span> turtle <span class="sw">import</span> *
+<span class="nr">2</span>
+<span class="nr">3</span>  <span class="var">laenge</span> = <span class="zahl">40</span>
+<span class="nr">4</span>  <span class="var">winkel</span> = <span class="zahl">90</span>
+<span class="nr">5</span>
+<span class="nr">6</span>  <span class="sw">for</span> <span class="var">i</span> <span class="sw">in</span> range(<span class="zahl">4</span>):
+<span class="nr">7</span>      forward(<span class="var">laenge</span>)
+<span class="nr">8</span>      right(<span class="var">winkel</span>)
+<span class="nr">9</span>      <span class="var">laenge</span> = <span class="var">laenge</span> + <span class="zahl">20</span>
+<span class="nr">10</span>
+<span class="nr">11</span> done()</pre>
+  <table>
+    <thead>
+      <tr><th>Durchlauf</th><th><code>i</code></th><th><code>laenge</code> bei <code>forward</code></th>
+      <th>gezeichnete Strecke</th><th><code>laenge</code> am Ende des Durchlaufs</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><code>0</code></td><td><code>40</code></td><td><code>40</code></td>
+        <td><input class="eingabe" data-loesung="60" inputmode="numeric" aria-label="laenge am Ende von Durchlauf 1"></td></tr>
+      <tr><td>2</td><td><input class="eingabe" data-loesung="1" inputmode="numeric" aria-label="i im Durchlauf 2"></td>
+        <td><input class="eingabe" data-loesung="60" inputmode="numeric" aria-label="laenge bei forward im Durchlauf 2"></td>
+        <td><input class="eingabe" data-loesung="60" inputmode="numeric" aria-label="gezeichnete Strecke im Durchlauf 2"></td>
+        <td><input class="eingabe" data-loesung="80" inputmode="numeric" aria-label="laenge am Ende von Durchlauf 2"></td></tr>
+      <tr><td>3</td><td><input class="eingabe" data-loesung="2" inputmode="numeric" aria-label="i im Durchlauf 3"></td>
+        <td><input class="eingabe" data-loesung="80" inputmode="numeric" aria-label="laenge bei forward im Durchlauf 3"></td>
+        <td><input class="eingabe" data-loesung="80" inputmode="numeric" aria-label="gezeichnete Strecke im Durchlauf 3"></td>
+        <td><input class="eingabe" data-loesung="100" inputmode="numeric" aria-label="laenge am Ende von Durchlauf 3"></td></tr>
+      <tr><td>4</td><td><input class="eingabe" data-loesung="3" inputmode="numeric" aria-label="i im Durchlauf 4"></td>
+        <td><input class="eingabe" data-loesung="100" inputmode="numeric" aria-label="laenge bei forward im Durchlauf 4"></td>
+        <td><input class="eingabe" data-loesung="100" inputmode="numeric" aria-label="gezeichnete Strecke im Durchlauf 4"></td>
+        <td><input class="eingabe" data-loesung="120" inputmode="numeric" aria-label="laenge am Ende von Durchlauf 4"></td></tr>
+    </tbody>
+  </table>
+  <p>Gesamtlänge aller gezeichneten Strecken:
+     <input class="eingabe" data-loesung="280" inputmode="numeric" aria-label="Gesamtlänge"> Schritte.<br>
+     Wert von <code>laenge</code> nach der Schleife:
+     <input class="eingabe" data-loesung="120" inputmode="numeric" aria-label="Wert nach der Schleife">.</p>
+  <div class="rueckmeldung">
+    <p><b>Lösung:</b> 40, 60, 80, 100 werden gezeichnet, zusammen 280 Schritte.
+    <code>laenge</code> steht am Ende auf 120.</p>
+    <p>Die letzte Erhöhung in Zeile 9 wirkt sich nicht mehr auf eine Zeichnung aus. Solche
+    überzähligen Durchläufe sind eine typische Fehlerquelle, wenn man aus dem Endwert einer
+    Variablen auf die Zeichnung schließen will.</p>
+  </div>
+  <button class="pruefen">Tabelle prüfen</button>
+</section>
+
+<!-- A3 -->
+<section class="aufgabe" data-aufgabe="3">
+  <span class="marke">A3</span>
+  <h2>Figur vorhersagen</h2>
+  <p class="afb">Anforderungsbereich II</p>
+  <p>Welche Figur entsteht? Entscheide, ohne das Programm auszuführen.</p>
+<pre><span class="nr">1</span>  <span class="var">laenge</span> = <span class="zahl">26</span>
+<span class="nr">2</span>
+<span class="nr">3</span>  <span class="sw">for</span> <span class="var">i</span> <span class="sw">in</span> range(<span class="zahl">6</span>):
+<span class="nr">4</span>      forward(<span class="var">laenge</span>)
+<span class="nr">5</span>      right(<span class="zahl">60</span>)
+<span class="nr">6</span>      <span class="var">laenge</span> = <span class="var">laenge</span> * <span class="zahl">1.3</span></pre>
+  <ul class="optionen figuren" data-loesung="b" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <svg viewBox="0 0 120 120" aria-hidden="true"><path class="fig" data-fig="sechseck" fill="none" stroke="#16242e" stroke-width="2.5"/></svg>
+      <span>geschlossenes Sechseck</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <svg viewBox="0 0 120 120" aria-hidden="true"><path class="fig" data-fig="spirale" fill="none" stroke="#16242e" stroke-width="2.5"/></svg>
+      <span>offene, nach außen wachsende Spirale</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <svg viewBox="0 0 120 120" aria-hidden="true"><path class="fig" data-fig="stern" fill="none" stroke="#16242e" stroke-width="2.5"/></svg>
+      <span>fünfzackiger Stern</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist B.</b> Der Winkel bleibt konstant, deshalb dreht die Turtle insgesamt 360
+    Grad und käme bei gleichbleibender Seitenlänge genau zum Startpunkt zurück. Weil
+    <code>laenge</code> in jedem Durchlauf wächst, wird jede Seite länger als die vorige und der
+    Linienzug schließt sich nicht.</p>
+    <p>Merksatz für die Klausur: Der Winkel bestimmt die Form, die Variable im Streckenargument
+    bestimmt, ob die Figur geschlossen bleibt.</p>
+  </div>
+  <button class="pruefen">Antwort prüfen</button>
+</section>
+
+<!-- A4 -->
+<section class="aufgabe" data-aufgabe="4">
+  <span class="marke">A4</span>
+  <h2>Zwei Werte tauschen</h2>
+  <p class="afb">Anforderungsbereich II</p>
+  <p>Ein Schüler möchte die Werte von <code>breit</code> und <code>schmal</code> vertauschen,
+     um dasselbe Muster in anderen Proportionen zu zeichnen.</p>
+<pre><span class="nr">1</span>  <span class="var">breit</span> = <span class="zahl">120</span>
+<span class="nr">2</span>  <span class="var">schmal</span> = <span class="zahl">40</span>
+<span class="nr">3</span>
+<span class="nr">4</span>  <span class="var">breit</span> = <span class="var">schmal</span>
+<span class="nr">5</span>  <span class="var">schmal</span> = <span class="var">breit</span></pre>
+  <p>Welche Werte stehen nach Zeile 5 in den Variablen?<br>
+     <code>breit</code>: <input class="eingabe" data-loesung="40" inputmode="numeric" aria-label="Wert von breit">
+     <code>schmal</code>: <input class="eingabe" data-loesung="40" inputmode="numeric" aria-label="Wert von schmal"></p>
+  <p>Wie lässt sich der Tausch korrekt ausführen?</p>
+  <ul class="optionen" data-loesung="b" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Zeile 4 und 5 vertauschen.</span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Den ersten Wert vorher in einer Hilfsvariablen sichern:
+      <code>merker = breit</code>, dann <code>breit = schmal</code>, dann
+      <code>schmal = merker</code>.</span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Statt <code>=</code> den Operator <code>==</code> verwenden.</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Beide Variablen enthalten 40.</b> Zeile 4 überschreibt den Wert 120, bevor er gesichert
+    wurde. Zeile 5 kopiert deshalb nur den bereits veränderten Wert zurück.</p>
+    <p><b>Richtig ist B.</b> Python erlaubt zusätzlich die Kurzform
+    <code>breit, schmal = schmal, breit</code>. Der Weg über die Hilfsvariable ist der, den ihr
+    im Struktogramm darstellen könnt, weil er jeden Einzelschritt zeigt.</p>
+  </div>
+  <button class="pruefen">Antworten prüfen</button>
+</section>
+
+<!-- A5 -->
+<section class="aufgabe" data-aufgabe="5">
+  <span class="marke">A5</span>
+  <h2>Gültigkeitsbereich</h2>
+  <p class="afb">Anforderungsbereich II</p>
+<pre><span class="nr">1</span>  <span class="sw">from</span> turtle <span class="sw">import</span> *
+<span class="nr">2</span>
+<span class="nr">3</span>  <span class="var">schrittweite</span> = <span class="zahl">30</span>
+<span class="nr">4</span>
+<span class="nr">5</span>  <span class="sw">def</span> zeichne_seite():
+<span class="nr">6</span>      <span class="var">schrittweite</span> = <span class="zahl">100</span>
+<span class="nr">7</span>      forward(<span class="var">schrittweite</span>)
+<span class="nr">8</span>
+<span class="nr">9</span>  zeichne_seite()
+<span class="nr">10</span> print(<span class="var">schrittweite</span>)</pre>
+  <p>Wie lang ist die gezeichnete Strecke, und was gibt Zeile 10 aus?</p>
+  <ul class="optionen" data-loesung="b" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span>Strecke 100, Ausgabe <code>100</code></span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span>Strecke 100, Ausgabe <code>30</code></span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span>Strecke 30, Ausgabe <code>30</code></span></button></li>
+    <li><button class="option" data-wert="d"><span class="kuerzel">D</span>
+      <span>Fehlermeldung, weil der Name zweimal vergeben ist</span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><b>Richtig ist B.</b> Die Zuweisung in Zeile 6 erzeugt eine <b>lokale Variable</b>, die nur
+    innerhalb der Funktion existiert. Gezeichnet werden 100 Schritte. Nach dem Rücksprung gilt
+    wieder die globale Variable mit dem Wert 30.</p>
+    <p>Sauberer wäre eine Funktion mit Parameter: <code>def zeichne_seite(schrittweite):</code>.
+    Dann ist an der Aufrufstelle sichtbar, mit welchem Wert gearbeitet wird.</p>
+  </div>
+  <button class="pruefen">Antwort prüfen</button>
+</section>
+
+<!-- A6 -->
+<section class="aufgabe" data-aufgabe="6">
+  <span class="marke">A6</span>
+  <h2>Datentyp beachten</h2>
+  <p class="afb">Anforderungsbereich II</p>
+  <p>Das Programm soll die Seitenlänge abfragen. Eingegeben wird <code>50</code>, trotzdem bricht
+     das Programm in Zeile 4 mit einem <code>TypeError</code> ab.</p>
+<pre><span class="nr">1</span>  <span class="sw">from</span> turtle <span class="sw">import</span> *
+<span class="nr">2</span>
+<span class="nr">3</span>  <span class="var">laenge</span> = input(<span class="zahl">"Seitenlänge: "</span>)
+<span class="nr">4</span>  forward(<span class="var">laenge</span>)</pre>
+  <p>Welche Korrektur behebt den Fehler?</p>
+  <ul class="optionen" data-loesung="c" data-typ="mc">
+    <li><button class="option" data-wert="a"><span class="kuerzel">A</span>
+      <span><code>forward("laenge")</code></span></button></li>
+    <li><button class="option" data-wert="b"><span class="kuerzel">B</span>
+      <span><code>laenge = input(50)</code></span></button></li>
+    <li><button class="option" data-wert="c"><span class="kuerzel">C</span>
+      <span><code>laenge = int(input("Seitenlänge: "))</code></span></button></li>
+    <li><button class="option" data-wert="d"><span class="kuerzel">D</span>
+      <span><code>forward(laenge + 0)</code></span></button></li>
+  </ul>
+  <div class="rueckmeldung">
+    <p><code>input()</code> liefert immer eine Zeichenkette vom Typ <code>str</code>, auch wenn
+    Ziffern eingegeben werden. <b>Richtig ist C:</b> Die Umwandlung mit <code>int()</code> erzeugt
+    aus der Zeichenkette eine ganze Zahl.</p>
+    <p>Mit <code>float()</code> ginge es ebenfalls, denn die Turtle akzeptiert
+    Kommazahlen als Streckenlänge. Antwort D scheitert, weil <code>str + int</code> selbst schon
+    ein <code>TypeError</code> ist.</p>
+  </div>
+  <button class="pruefen">Antwort prüfen</button>
+</section>
+
+<!-- A7 -->
+<section class="aufgabe" data-aufgabe="7">
+  <span class="marke">A7</span>
+  <h2>Fehler finden</h2>
+  <p class="afb">Anforderungsbereich II</p>
+  <p>Das Programm zeichnet die Figur korrekt, stürzt danach aber ab.</p>
+<pre><span class="nr">1</span>  <span class="sw">from</span> turtle <span class="sw">import</span> *
+<span class="nr">2</span>
+<span class="nr">3</span>  <span class="var">anzahl</span> = <span class="zahl">8</span>
+<span class="nr">4</span>  <span class="var">winkel</span> = <span class="zahl">360</span> / <span class="var">anzahl</span>
+<span class="nr">5</span>  <span class="var">laenge</span> = <span class="zahl">60</span>
+<span class="nr">6</span>
+<span class="nr">7</span>  <span class="sw">for</span> <span class="var">i</span> <span class="sw">in</span> range(<span class="var">anzahl</span>):
+<span class="nr">8</span>      forward(<span class="var">laenge</span>)
+<span class="nr">9</span>      right(<span class="var">winkel</span>)
+<span class="nr">10</span>     <span class="var">laenge</span> = <span class="var">laenge</span> + <span class="zahl">10</span>
+<span class="nr">11</span>
+<span class="nr">12</span> print(<span class="zahl">"Endlänge:"</span>, <span class="var">Laenge</span>)</pre>
+  <p>Fehlerhafte Zeile: <input class="eingabe" data-loesung="12" inputmode="numeric" aria-label="Zeilennummer"></p>
+  <p>Welcher Wert würde nach der Korrektur ausgegeben?
+     <input class="eingabe" data-loesung="140" inputmode="numeric" aria-label="ausgegebener Wert"></p>
+  <div class="rueckmeldung">
+    <p>Zeile 12 verwendet <code>Laenge</code> mit großem Anfangsbuchstaben. Python unterscheidet
+    Groß- und Kleinschreibung in Bezeichnern, deshalb ist dieser Name unbekannt und es entsteht ein
+    <b>NameError</b>.</p>
+    <p>Nach der Korrektur wird 140 ausgegeben: Startwert 60 plus achtmal 10.</p>
+  </div>
+  <button class="pruefen">Antworten prüfen</button>
+</section>
+
+<!-- Selbsteinschätzung -->
+<section class="aufgabe">
+  <span class="marke">Ende</span>
+  <h2>Selbsteinschätzung</h2>
+  <p>Hake ab, was du ohne Nachschlagen erklären kannst. Was offen bleibt, nimmst du mit in die
+     nächste Stunde.</p>
+  <ul class="checkliste">
+    <li><input type="checkbox" id="c1"><label for="c1">Ich kann erklären, warum eine Zuweisung von
+      rechts nach links gelesen wird.</label></li>
+    <li><input type="checkbox" id="c2"><label for="c2">Ich kann den Wert einer Variablen über
+      mehrere Schleifendurchläufe in einer Tabelle verfolgen.</label></li>
+    <li><input type="checkbox" id="c3"><label for="c3">Ich kann vorhersagen, wie sich eine
+      veränderliche Variable auf die gezeichnete Figur auswirkt.</label></li>
+    <li><input type="checkbox" id="c4"><label for="c4">Ich kann zwei Werte korrekt tauschen und
+      begründen, wofür die Hilfsvariable nötig ist.</label></li>
+    <li><input type="checkbox" id="c5"><label for="c5">Ich kann lokale und globale Variablen
+      unterscheiden.</label></li>
+    <li><input type="checkbox" id="c6"><label for="c6">Ich weiß, welchen Datentyp
+      <code>input()</code> liefert und wie ich ihn umwandle.</label></li>
+    <li><input type="checkbox" id="c7"><label for="c7">Ich finde Namensfehler in fremdem
+      Quelltext.</label></li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Mini-Turtle: erzeugt SVG-Pfade nach Turtle-Semantik ---------- */
+  function turtlePfad(schritte){
+    var x=0, y=0, richtung=0, punkte=[[0,0]];
+    schritte.forEach(function(s){
+      x += Math.cos(richtung*Math.PI/180) * s.vor;
+      y += Math.sin(richtung*Math.PI/180) * s.vor;
+      punkte.push([x,y]);
+      richtung += s.rechts;               /* in SVG zeigt y nach unten */
+    });
+    return punkte;
+  }
+  function einpassen(punkte, breite, hoehe, rand){
+    var xs = punkte.map(function(p){return p[0];});
+    var ys = punkte.map(function(p){return p[1];});
+    var minX=Math.min.apply(null,xs), maxX=Math.max.apply(null,xs);
+    var minY=Math.min.apply(null,ys), maxY=Math.max.apply(null,ys);
+    var sx=(breite-2*rand)/Math.max(maxX-minX,1), sy=(hoehe-2*rand)/Math.max(maxY-minY,1);
+    var s=Math.min(sx,sy);
+    var ox=rand+((breite-2*rand)-(maxX-minX)*s)/2;
+    var oy=rand+((hoehe-2*rand)-(maxY-minY)*s)/2;
+    return punkte.map(function(p){
+      return [(p[0]-minX)*s+ox, (p[1]-minY)*s+oy];
+    });
+  }
+  function alsPfad(punkte){
+    return punkte.map(function(p,i){
+      return (i===0?"M ":"L ")+p[0].toFixed(1)+" "+p[1].toFixed(1);
+    }).join(" ");
+  }
+
+  /* ---------- Aufmacher: quadratische Spirale ---------- */
+  var laengen=[], l=8;
+  var schritte=[];
+  for(var k=0;k<22;k++){ laengen.push(l); schritte.push({vor:l, rechts:90}); l+=7; }
+  var roh = turtlePfad(schritte);
+  var pass = einpassen(roh, 460, 260, 14);
+  var pfad = document.getElementById("spirale");
+  var wertFeld = document.getElementById("speicherwert");
+  if(pfad){
+    pfad.setAttribute("d", alsPfad(pass));
+    var langsam = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var gesamt = pfad.getTotalLength();
+    if(langsam){
+      wertFeld.textContent = laengen[laengen.length-1];
+    } else {
+      pfad.style.strokeDasharray = gesamt;
+      pfad.style.strokeDashoffset = gesamt;
+      var start = null, dauer = 3400;
+      requestAnimationFrame(function anim(t){
+        if(start===null) start=t;
+        var p = Math.min((t-start)/dauer, 1);
+        pfad.style.strokeDashoffset = gesamt*(1-p);
+        var idx = Math.min(Math.floor(p*laengen.length), laengen.length-1);
+        wertFeld.textContent = laengen[idx];
+        if(p<1) requestAnimationFrame(anim);
+      });
+    }
+  }
+
+  /* ---------- Figuren in Aufgabe 3 ---------- */
+  var figuren = {
+    sechseck: (function(){var a=[];for(var i=0;i<6;i++)a.push({vor:40,rechts:60});return a;})(),
+    spirale:  (function(){var a=[],v=26;for(var i=0;i<6;i++){a.push({vor:v,rechts:60});v*=1.3;}return a;})(),
+    stern:    (function(){var a=[];for(var i=0;i<5;i++)a.push({vor:70,rechts:144});return a;})()
+  };
+  Array.prototype.forEach.call(document.querySelectorAll(".fig"), function(el){
+    var art = el.getAttribute("data-fig");
+    el.setAttribute("d", alsPfad(einpassen(turtlePfad(figuren[art]), 120, 120, 10)));
+  });
+
+  /* ---------- Auswertung ---------- */
+  function normal(text){
+    return text.toLowerCase().trim()
+      .replace(/["'`]/g,"").replace(/,/g,".")
+      .replace(/\s+/g," ").replace(/\.0+$/,"");
+  }
+  function stimmt(eingabe, loesung){
+    var soll = loesung.split("|").map(normal);
+    return soll.indexOf(normal(eingabe)) !== -1;
+  }
+
+  document.addEventListener("click", function(ev){
+    var opt = ev.target.closest ? ev.target.closest(".option") : null;
+    if(opt){
+      var liste = opt.closest(".optionen");
+      Array.prototype.forEach.call(liste.querySelectorAll(".option"), function(o){
+        o.classList.remove("richtig","falsch");
+      });
+      opt.classList.add(opt.getAttribute("data-wert")===liste.getAttribute("data-loesung")?"richtig":"falsch");
+      liste.setAttribute("data-beantwortet","ja");
+      standAktualisieren();
+      return;
+    }
+    var knopf = ev.target.closest ? ev.target.closest(".pruefen") : null;
+    if(knopf){
+      var aufgabe = knopf.closest(".aufgabe");
+      Array.prototype.forEach.call(aufgabe.querySelectorAll("input.eingabe"), function(feld){
+        feld.classList.remove("richtig","falsch");
+        if(feld.value.trim()==="") return;
+        feld.classList.add(stimmt(feld.value, feld.getAttribute("data-loesung"))?"richtig":"falsch");
+      });
+      var offen = aufgabe.querySelectorAll(".optionen:not([data-beantwortet])").length
+                + Array.prototype.filter.call(aufgabe.querySelectorAll("input.eingabe"),
+                    function(f){return f.value.trim()==="";}).length;
+      var rueck = aufgabe.querySelector(".rueckmeldung");
+      if(rueck){
+        rueck.classList.add("sichtbar");
+        rueck.classList.toggle("offen", offen>0);
+      }
+      standAktualisieren();
+    }
+  });
+
+  var alleFelder = document.querySelectorAll("input.eingabe");
+  var alleListen = document.querySelectorAll(".optionen");
+  var gesamtPunkte = alleFelder.length + alleListen.length;
+
+  function standAktualisieren(){
+    var richtig = document.querySelectorAll("input.eingabe.richtig").length
+                + document.querySelectorAll(".option.richtig").length;
+    document.getElementById("stand").textContent =
+      richtig + " von " + gesamtPunkte + " Teilantworten richtig";
+    document.getElementById("balken").style.width = (richtig/gesamtPunkte*100) + "%";
+  }
+  document.getElementById("stand").textContent = "0 von " + gesamtPunkte + " Teilantworten richtig";
+
+  /* ---------- Lösungen ein- und ausblenden ---------- */
+  var knopfAlle = document.getElementById("alles");
+  var offenSichtbar = false;
+  knopfAlle.addEventListener("click", function(){
+    offenSichtbar = !offenSichtbar;
+    Array.prototype.forEach.call(document.querySelectorAll(".rueckmeldung"), function(r){
+      r.classList.toggle("sichtbar", offenSichtbar);
+    });
+    knopfAlle.textContent = offenSichtbar ? "Lösungen ausblenden" : "Lösungen einblenden";
+  });
+})();
+</script>
+</body>
+</html>
