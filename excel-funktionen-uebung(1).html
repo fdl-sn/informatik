@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Excel-Funktionen üben – Klasse 8</title>
+<style>
+:root{
+  --green:#1d6f42;--green-d:#155232;--green-l:#e8f3ec;
+  --line:#d0d7de;--text:#1f2328;--muted:#59636e;--bg:#f4f6f8;--card:#fff;
+  --ok:#1a7f37;--ok-bg:#dafbe1;--err:#cf222e;--err-bg:#ffebe9;
+  --task:#fff8c5;--blue:#e3edff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+header.top{position:sticky;top:0;z-index:20;background:var(--green);color:#fff;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+header.top h1{font-size:1.1rem;margin:0;flex:1 1 260px}
+.progress{flex:1 1 220px;max-width:360px}
+.bar{height:10px;background:rgba(255,255,255,.3);border-radius:5px;overflow:hidden}
+.bar span{display:block;height:100%;background:#fff;width:0;transition:width .3s}
+.ptxt{font-size:.85rem}
+main{max-width:1000px;margin:0 auto;padding:16px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:20px}
+h2{margin:0 0 2px;font-size:1.3rem;color:var(--green)}
+h3{font-size:1.05rem;margin:18px 0 8px}
+.time{font-size:.85rem;color:var(--muted);margin-bottom:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px;background:#fbfcfd}
+.card h4{margin:0 0 4px;font-family:Consolas,"Courier New",monospace;color:var(--green);font-size:1.05rem}
+.card p{margin:0 0 6px}
+code{font-family:Consolas,"Courier New",monospace;background:#eef1f4;padding:1px 5px;border-radius:4px;font-size:.95em}
+.rules{background:var(--green-l);border-radius:8px;padding:10px 16px;margin-top:14px}
+.rules ul{margin:6px 0;padding-left:20px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.88rem;margin:8px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:16px;height:16px;border:1px solid #b7c0c8;border-radius:3px;display:inline-block}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--green);background:var(--green);color:#fff;padding:6px 14px}
+button:hover{background:var(--green-d)}
+button.sec{background:#fff;color:var(--green)}
+button.sec:hover{background:var(--green-l)}
+button.small{padding:3px 10px;font-size:.88rem}
+/* Zuordnung */
+.match{display:grid;gap:8px;margin:10px 0}
+.mrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.mrow .q{flex:1 1 300px}
+.mrow select{font:inherit;padding:4px 6px;border-radius:5px;border:1px solid #b7c0c8;min-width:150px}
+.mrow.ok{background:var(--ok-bg);border-color:#9fd9ad}
+.mrow.bad{background:var(--err-bg);border-color:#f5b3b0}
+.mark{width:22px;font-weight:bold}
+/* Tabelle */
+.fbar{display:flex;border:1px solid #b7c0c8;border-radius:6px 6px 0 0;overflow:hidden;font-family:Consolas,"Courier New",monospace;font-size:.92rem;background:#fff}
+.fbar .addr{background:#eef1f4;padding:4px 10px;min-width:58px;border-right:1px solid #b7c0c8;text-align:center}
+.fbar .fx{padding:4px 8px;color:var(--muted);font-style:italic;border-right:1px solid #d0d7de}
+.fbar .raw{padding:4px 10px;flex:1;white-space:pre;overflow:hidden;text-overflow:ellipsis}
+.sheetwrap{overflow-x:auto;border:1px solid #b7c0c8;border-top:0;border-radius:0 0 6px 6px;margin-bottom:10px}
+table.sheet{border-collapse:collapse;font-size:.93rem;width:100%;min-width:620px;table-layout:fixed}
+table.sheet th{background:#eef1f4;color:var(--muted);font-weight:500;border:1px solid #d0d7de;padding:2px 4px;text-align:center;font-size:.85rem}
+table.sheet th.rh{width:38px}
+table.sheet td{border:1px solid #d0d7de;padding:0;height:31px;background:#fff}
+table.sheet input{width:100%;height:31px;border:0;padding:4px 7px;font:inherit;background:transparent;outline:none;color:var(--text)}
+table.sheet input.r{text-align:right}
+table.sheet input.errv{color:var(--err);font-weight:600}
+td.locked{background:#f6f8fa!important}
+td.head input{font-weight:600}
+td.task{background:var(--task)!important}
+td.task.ok{background:var(--ok-bg)!important}
+td.task.bad{background:var(--err-bg)!important}
+td.editable{background:var(--blue)!important}
+table.sheet input:focus{box-shadow:inset 0 0 0 2px var(--green);background:#fff}
+.sheettools{display:flex;justify-content:flex-end;margin-bottom:6px}
+/* Aufgaben */
+ol.tasks{list-style:none;padding:0;margin:0}
+ol.tasks li{border:1px solid var(--line);border-left:5px solid #c9d1d9;border-radius:6px;padding:9px 12px;margin:8px 0;background:#fff}
+ol.tasks li.ok{border-left-color:var(--ok);background:#f4fbf6}
+ol.tasks li.bad{border-left-color:var(--err)}
+ol.tasks li.partial{border-left-color:#d4a72c}
+.tnum{font-weight:700;color:var(--green);margin-right:4px}
+.tbtns{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.msg{font-size:.92rem;margin-top:5px}
+.msg.err{color:var(--err)}
+.msg.okm{color:var(--ok);font-weight:600}
+.msg.info{color:#7d5a00}
+.tip{font-size:.92rem;background:#f6f8fa;border-radius:6px;padding:6px 10px;margin-top:6px;display:none}
+.tip.show{display:block}
+.sol{font-size:.92rem;background:#eef6ff;border:1px solid #c6dcf5;border-radius:6px;padding:6px 10px;margin-top:6px;display:none}
+.sol.show{display:block}
+.sol code{background:#fff}
+button.solbtn{display:none}
+button.solbtn.avail{display:inline-block}
+.msol{color:#0b5cad;font-size:.9rem;font-weight:600;display:none}
+.msol.show{display:inline}
+/* Quiz */
+.qitem{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0}
+.qitem .qq{font-weight:600;margin-bottom:6px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts button{background:#fff;color:var(--text);border:1px solid #b7c0c8}
+.opts button:hover{background:#f3f6f8}
+.opts button.right{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);font-weight:600}
+.opts button.wrong{background:var(--err-bg);border-color:var(--err);color:var(--err)}
+.opts button:disabled{cursor:default}
+.qex{font-size:.92rem;margin-top:6px;display:none}
+.qex.show{display:block}
+/* Auswertung */
+.summary{display:grid;gap:6px;max-width:460px}
+.srow{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:3px 0}
+.srow.total{font-weight:700;border-bottom:0;font-size:1.1rem;color:var(--green)}
+.namefield{margin:8px 0 14px}
+.namefield input{font:inherit;padding:5px 8px;border:1px solid #b7c0c8;border-radius:5px;min-width:220px}
+.final{margin-top:12px;font-weight:600}
+footer.foot{max-width:1000px;margin:0 auto;padding:4px 16px 24px;font-size:.82rem;color:var(--muted);text-align:center}
+@media (max-width:600px){main{padding:10px}section{padding:14px}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>📊 Excel-Funktionen trainieren · Informatik Klasse 8</h1>
+  <div class="progress">
+    <div class="bar"><span id="pbar"></span></div>
+    <div class="ptxt" id="ptxt">0 von 0 Punkten</div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ TEIL 1 ============ -->
+<section>
+  <h2>Teil 1 – Die Funktionen im Überblick</h2>
+  <div class="time">⏱ ca. 5 Minuten · Lies dir die Karten durch und löse dann die Zuordnung.</div>
+
+  <div class="cards">
+    <div class="card"><h4>SUMME</h4><p>Addiert alle Zahlen.</p><code>=SUMME(A1:A5)</code></div>
+    <div class="card"><h4>MIN</h4><p>Findet die <b>kleinste</b> Zahl.</p><code>=MIN(A1:A5)</code></div>
+    <div class="card"><h4>MAX</h4><p>Findet die <b>größte</b> Zahl.</p><code>=MAX(A1:A5)</code></div>
+    <div class="card"><h4>MITTELWERT</h4><p>Berechnet den Durchschnitt: Summe ÷ Anzahl der Zahlen.</p><code>=MITTELWERT(A1:A5)</code></div>
+    <div class="card"><h4>PRODUKT</h4><p>Multipliziert alle Zahlen miteinander.</p><code>=PRODUKT(B2;C2)</code></div>
+    <div class="card"><h4>WENN</h4><p>Prüft eine Bedingung. Ist sie erfüllt, kommt der Dann-Wert heraus, sonst der Sonst-Wert.</p><code>=WENN(A1&gt;=50;"bestanden";"nicht bestanden")</code></div>
+  </div>
+
+  <div class="rules">
+    <b>Die wichtigsten Regeln</b>
+    <ul>
+      <li>Jede Formel beginnt mit einem <code>=</code>.</li>
+      <li><b>Doppelpunkt</b> = Bereich: <code>D2:D7</code> bedeutet „alle Zellen von D2 bis D7“.</li>
+      <li><b>Semikolon</b> trennt einzelne Werte: <code>=SUMME(D2;D5)</code> addiert nur D2 und D5.</li>
+      <li>Text steht in Anführungszeichen: <code>"Urkunde"</code></li>
+      <li>Vergleiche: <code>&gt;</code> größer · <code>&lt;</code> kleiner · <code>&gt;=</code> größer oder gleich · <code>&lt;=</code> kleiner oder gleich · <code>=</code> gleich · <code>&lt;&gt;</code> ungleich</li>
+    </ul>
+  </div>
+
+  <h3>Aufgabe: Welche Funktion passt?</h3>
+  <div class="match" id="match"></div>
+  <button id="matchBtn">Überprüfen</button>
+  <button id="matchSol" class="sec solbtn">🔑 Lösung anzeigen</button>
+  <span id="matchRes" class="msg" style="margin-left:10px"></span>
+</section>
+
+<!-- ============ TEIL 2 ============ -->
+<section>
+  <h2>Teil 2 – Das Sportfest der 8c</h2>
+  <div class="time">⏱ ca. 10 Minuten · SUMME, MITTELWERT, MAX, MIN und WENN</div>
+  <p>Klicke in eine <b>gelbe Zelle</b>, tippe deine Formel ein und drücke <b>Enter</b>. Die Tabelle rechnet wie Excel – und sagt dir, ob es stimmt.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--task)"></i> Hier kommt deine Formel hin</span>
+    <span><i class="sw" style="background:#f6f8fa"></i> Feste Daten</span>
+    <span><i class="sw" style="background:var(--ok-bg)"></i> Richtig gelöst</span>
+  </div>
+  <div class="sheettools"><button class="sec small" id="s1-reset">↺ Tabelle zurücksetzen</button></div>
+  <div id="s1"></div>
+  <ol class="tasks" id="s1-tasks"></ol>
+</section>
+
+<!-- ============ TEIL 3 ============ -->
+<section>
+  <h2>Teil 3 – Einkauf fürs Trainingslager</h2>
+  <div class="time">⏱ ca. 10 Minuten · PRODUKT, SUMME und WENN</div>
+  <p>Die Klasse kauft für das Trainingslager ein. Das Budget beträgt 50 €. Reicht das Geld?</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--task)"></i> Hier kommt deine Formel hin</span>
+    <span><i class="sw" style="background:var(--blue)"></i> Darfst du ändern (Bonus)</span>
+    <span><i class="sw" style="background:#f6f8fa"></i> Feste Daten</span>
+  </div>
+  <div class="sheettools"><button class="sec small" id="s2-reset">↺ Tabelle zurücksetzen</button></div>
+  <div id="s2"></div>
+  <ol class="tasks" id="s2-tasks"></ol>
+</section>
+
+<!-- ============ TEIL 4 ============ -->
+<section>
+  <h2>Teil 4 – Funktionen verschachteln: Mannschaftswettkampf Kugelstoßen</h2>
+  <div class="time">⏱ ca. 8 Minuten · SUMME, MITTELWERT, MIN, MAX und PRODUKT ineinander</div>
+  <div class="rules">
+    <b>Was heißt „verschachteln“?</b>
+    <ul>
+      <li>Eine Funktion steht <b>innerhalb der Klammer</b> einer anderen Funktion.</li>
+      <li>Excel rechnet <b>von innen nach außen</b>: Erst wird die innere Funktion berechnet, ihr Ergebnis geht dann in die äußere Funktion.</li>
+      <li>Beispiel: <code>=SUMME(MAX(A1:A3);MAX(B1:B3))</code> – zuerst werden die beiden Maxima bestimmt, dann werden sie addiert.</li>
+      <li>Achte darauf, dass jede geöffnete Klammer <code>(</code> auch wieder geschlossen wird <code>)</code>.</li>
+    </ul>
+  </div>
+  <p>Vier Sportler der 8c haben je drei Versuche im Kugelstoßen. Für die Mannschaft zählt bei jeder Person nur der <b>beste Versuch</b>. Löse jede Aufgabe mit <b>einer einzigen Formel</b> – ohne Hilfszellen.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--task)"></i> Hier kommt deine Formel hin</span>
+    <span><i class="sw" style="background:#f6f8fa"></i> Feste Daten</span>
+  </div>
+  <div class="sheettools"><button class="sec small" id="s3-reset">↺ Tabelle zurücksetzen</button></div>
+  <div id="s3"></div>
+  <ol class="tasks" id="s3-tasks"></ol>
+</section>
+
+<!-- ============ TEIL 5 ============ -->
+<section>
+  <h2>Teil 5 – Schnelltest</h2>
+  <div class="time">⏱ ca. 5 Minuten · Du hast bei jeder Frage nur einen Versuch!</div>
+  <div id="quiz"></div>
+</section>
+
+<!-- ============ AUSWERTUNG ============ -->
+<section>
+  <h2>Deine Auswertung</h2>
+  <div class="namefield"><label>Dein Vorname: <input id="studentName" placeholder="Vorname" autocomplete="off"></label></div>
+  <div class="summary" id="summary"></div>
+  <div class="final" id="final"></div>
+</section>
+
+</main>
+
+<footer class="foot">
+  Diese Übungsdatei wurde mit Unterstützung von künstlicher Intelligenz (Claude, Anthropic) erstellt und von Herrn Fiedler überarbeitet.
+</footer>
+
+<script>
+/* =====================================================================
+   Formel-Engine (vereinfachtes deutsches Excel)
+   ===================================================================== */
+class XErr { constructor(err, hint){ this.err = err; this.hint = hint; } }
+
+const COMMA_HINT = 'In der deutschen Excel-Version trennt man die Teile einer Funktion mit einem Semikolon ; – nicht mit einem Komma.';
+
+function colNum(s){ let n=0; for(const ch of s) n = n*26 + (ch.charCodeAt(0)-64); return n; }
+function colStr(n){ let s=''; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; }
+function splitAddr(a){ const m=a.match(/^([A-Z]+)(\d+)$/); return {c:m[1], r:+m[2]}; }
+function rowOf(a){ return splitAddr(a).r; }
+function expand(a,b){
+  const A=splitAddr(a), B=splitAddr(b);
+  const c1=Math.min(colNum(A.c),colNum(B.c)), c2=Math.max(colNum(A.c),colNum(B.c));
+  const r1=Math.min(A.r,B.r), r2=Math.max(A.r,B.r);
+  const out=[]; for(let r=r1;r<=r2;r++) for(let c=c1;c<=c2;c++) out.push(colStr(c)+r);
+  return out;
+}
+
+function tokenize(s){
+  const t=[]; let i=0, m;
+  while(i<s.length){
+    const c=s[i];
+    if(/\s/.test(c)){ i++; continue; }
+    if(c==='"'){
+      const j=s.indexOf('"',i+1);
+      if(j<0) throw new XErr('#FEHLER','Ein Anführungszeichen " fehlt. Text muss immer zwischen zwei " stehen.');
+      t.push({k:'str',v:s.slice(i+1,j)}); i=j+1; continue;
+    }
+    const rest=s.slice(i);
+    if((m=rest.match(/^\$?([A-Za-z]{1,2})\$?(\d+)(?::\$?([A-Za-z]{1,2})\$?(\d+))?(?![A-Za-z0-9(])/))){
+      if(m[3]) t.push({k:'range',a:(m[1]+m[2]).toUpperCase(),b:(m[3]+m[4]).toUpperCase()});
+      else t.push({k:'ref',a:(m[1]+m[2]).toUpperCase()});
+      i+=m[0].length; continue;
+    }
+    if((m=rest.match(/^\d+(?:[.,]\d+)?/))){ t.push({k:'num',v:parseFloat(m[0].replace(',','.'))}); i+=m[0].length; continue; }
+    if((m=rest.match(/^[A-Za-zÄÖÜäöüß]+/))){ t.push({k:'name',v:m[0].toUpperCase(),raw:m[0]}); i+=m[0].length; continue; }
+    if((m=rest.match(/^(>=|<=|<>|>|<|=)/))){ t.push({k:'cmp',v:m[0]}); i+=m[0].length; continue; }
+    if('+-*/&'.includes(c)){ t.push({k:'op',v:c}); i++; continue; }
+    if(c==='('||c===')'||c===';'||c===','){ t.push({k:c}); i++; continue; }
+    if(c===':') throw new XErr('#FEHLER','Ein Bereich wird so geschrieben: D2:D7 (Doppelpunkt zwischen zwei Zellen).');
+    throw new XErr('#FEHLER','Das Zeichen „'+c+'“ kann hier nicht verwendet werden.');
+  }
+  return t;
+}
+
+function scalar(v){
+  if(v && v.range) throw new XErr('#WERT!','Ein Bereich wie D2:D7 darf nur innerhalb einer Funktion stehen, z. B. =SUMME(D2:D7).');
+  return v;
+}
+function toNum(v){
+  v=scalar(v);
+  if(v===null||v===undefined) return 0;
+  if(typeof v==='number') return v;
+  if(typeof v==='boolean') return v?1:0;
+  if(v==='') return 0;
+  throw new XErr('#WERT!','Mit Text kann nicht gerechnet werden.');
+}
+function compare(l,r,op){
+  l=scalar(l); r=scalar(r);
+  if(l===null||l===undefined) l = typeof r==='string' ? '' : 0;
+  if(r===null||r===undefined) r = typeof l==='string' ? '' : 0;
+  if(typeof l==='boolean') l=l?1:0;
+  if(typeof r==='boolean') r=r?1:0;
+  let c;
+  if(typeof l==='number' && typeof r==='number') c = Math.abs(l-r)<1e-12 ? 0 : (l<r?-1:1);
+  else if(typeof l==='string' && typeof r==='string'){ const a=l.toLowerCase(), b=r.toLowerCase(); c = a===b?0:(a<b?-1:1); }
+  else c = typeof l==='number' ? -1 : 1;
+  switch(op){ case '=':return c===0; case '<>':return c!==0; case '<':return c<0; case '>':return c>0; case '<=':return c<=0; case '>=':return c>=0; }
+}
+function nums(args){
+  const out=[];
+  for(const a of args){
+    if(a && a.range){ for(const v of a.range) if(typeof v==='number') out.push(v); }
+    else if(a===null||a===undefined) continue;
+    else out.push(toNum(a));
+  }
+  return out;
+}
+const EN_NAMES = {SUM:'SUMME',AVERAGE:'MITTELWERT',PRODUCT:'PRODUKT',IF:'WENN',SUMM:'SUMME',SUME:'SUMME',MITTEL:'MITTELWERT',DURCHSCHNITT:'MITTELWERT',PRODUCKT:'PRODUKT',WEN:'WENN',MINIMUM:'MIN',MAXIMUM:'MAX'};
+
+function callFn(name,args){
+  switch(name){
+    case 'SUMME': return nums(args).reduce((s,x)=>s+x,0);
+    case 'MIN': { const n=nums(args); return n.length?Math.min(...n):0; }
+    case 'MAX': { const n=nums(args); return n.length?Math.max(...n):0; }
+    case 'MITTELWERT': {
+      const n=nums(args);
+      if(!n.length) throw new XErr('#DIV/0!','Im Bereich stehen keine Zahlen – der Mittelwert kann nicht berechnet werden.');
+      return n.reduce((s,x)=>s+x,0)/n.length;
+    }
+    case 'PRODUKT': { const n=nums(args); return n.length ? n.reduce((s,x)=>s*x,1) : 0; }
+    case 'WENN': {
+      if(args.length<2||args.length>3) throw new XErr('#FEHLER','WENN hat drei Teile: =WENN(Bedingung;Dann-Wert;Sonst-Wert).');
+      const c=scalar(args[0]); let b;
+      if(typeof c==='boolean') b=c;
+      else if(typeof c==='number') b=c!==0;
+      else if(c===null||c===undefined) b=false;
+      else throw new XErr('#WERT!','Der erste Teil von WENN muss eine Bedingung sein, z. B. D2>=500.');
+      return b ? scalar(args[1]) : (args.length===3 ? scalar(args[2]) : false);
+    }
+  }
+  if(EN_NAMES[name]) throw new XErr('#NAME?','Diese Funktion heißt in der deutschen Excel-Version '+EN_NAMES[name]+'.');
+  throw new XErr('#NAME?','Eine Funktion „'+name+'“ gibt es nicht. Prüfe die Schreibweise.');
+}
+
+function evaluate(formula,getCell){
+  const toks=tokenize(formula); let p=0;
+  const peek=()=>toks[p], next=()=>toks[p++];
+  function parseExpr(){ let l=parseAdd(); while(peek()&&peek().k==='cmp'){ const op=next().v; const r=parseAdd(); l=compare(l,r,op); } return l; }
+  function parseAdd(){
+    let l=parseMul();
+    while(peek()&&peek().k==='op'&&'+-&'.includes(peek().v)){
+      const op=next().v, r=parseMul();
+      if(op==='&') l=display(scalar(l))+display(scalar(r));
+      else { const a=toNum(l), b=toNum(r); l = op==='+'?a+b:a-b; }
+    }
+    return l;
+  }
+  function parseMul(){
+    let l=parseUnary();
+    while(peek()&&peek().k==='op'&&'*/'.includes(peek().v)){
+      const op=next().v, r=parseUnary(); const a=toNum(l), b=toNum(r);
+      if(op==='/'&&b===0) throw new XErr('#DIV/0!','Durch 0 kann man nicht teilen.');
+      l = op==='*'?a*b:a/b;
+    }
+    return l;
+  }
+  function parseUnary(){
+    if(peek()&&peek().k==='op'&&'+-'.includes(peek().v)){ const op=next().v; const v=toNum(parseUnary()); return op==='-'?-v:v; }
+    return parsePrimary();
+  }
+  function parsePrimary(){
+    const t=next();
+    if(!t) throw new XErr('#FEHLER','Die Formel ist unvollständig.');
+    if(t.k==='num'||t.k==='str') return t.v;
+    if(t.k==='ref') return getCell(t.a);
+    if(t.k==='range') return {range:expand(t.a,t.b).map(getCell)};
+    if(t.k==='('){ const v=parseExpr(); const c=next(); if(!c||c.k!==')') throw new XErr('#FEHLER','Eine schließende Klammer ) fehlt.'); return v; }
+    if(t.k==='name'){
+      if(!peek()||peek().k!=='('){
+        if(t.v==='WAHR') return true;
+        if(t.v==='FALSCH') return false;
+        if(EN_NAMES[t.v]||['SUMME','MIN','MAX','MITTELWERT','PRODUKT','WENN'].includes(t.v)) throw new XErr('#FEHLER','Nach dem Funktionsnamen muss eine Klammer ( folgen.');
+        throw new XErr('#NAME?','Excel kennt „'+t.raw+'“ nicht. Text muss in Anführungszeichen stehen, z. B. "'+t.raw+'".');
+      }
+      next();
+      const args=[];
+      if(peek()&&peek().k===')'){ next(); }
+      else {
+        while(true){
+          if(peek()&&peek().k===';'){ args.push(null); next(); continue; }
+          args.push(parseExpr());
+          const s=next();
+          if(!s) throw new XErr('#FEHLER','Eine schließende Klammer ) fehlt.');
+          if(s.k===')') break;
+          if(s.k===';') continue;
+          if(s.k===',') throw new XErr('#FEHLER',COMMA_HINT);
+          throw new XErr('#FEHLER','Zwischen den Teilen der Funktion fehlt ein Semikolon ; oder am Ende eine Klammer ).');
+        }
+      }
+      return callFn(t.v,args);
+    }
+    if(t.k===',') throw new XErr('#FEHLER',COMMA_HINT);
+    if(t.k===';') throw new XErr('#FEHLER','Ein Semikolon ; steht an einer falschen Stelle.');
+    if(t.k===')') throw new XErr('#FEHLER','Hier steht eine Klammer ) zu viel oder an der falschen Stelle.');
+    if(t.k==='cmp'&&t.v==='=') throw new XErr('#FEHLER','Das Gleichheitszeichen = steht nur einmal ganz am Anfang der Formel.');
+    throw new XErr('#FEHLER','Die Formel enthält an dieser Stelle einen Fehler.');
+  }
+  const v=parseExpr();
+  if(p<toks.length){
+    const t=toks[p];
+    if(t.k===',') throw new XErr('#FEHLER',COMMA_HINT);
+    if(t.k===')') throw new XErr('#FEHLER','Es gibt eine schließende Klammer ) zu viel.');
+    throw new XErr('#FEHLER','Nach dem Ende der Formel steht noch etwas. Fehlt ein Rechenzeichen oder ein Semikolon?');
+  }
+  return scalar(v);
+}
+
+function display(v,dec){
+  if(v===null||v===undefined) return '';
+  if(v instanceof XErr) return v.err;
+  if(typeof v==='number'){
+    const r=Math.round(v*1e9)/1e9;
+    if(dec!==undefined) return r.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec,useGrouping:false});
+    return r.toLocaleString('de-DE',{maximumFractionDigits:3,useGrouping:false});
+  }
+  if(typeof v==='boolean') return v?'WAHR':'FALSCH';
+  return String(v);
+}
+
+/* Formel beim „Nach unten ausfüllen“ verschieben (relative Bezüge) */
+function shiftFormula(f,dr){
+  return f.split('"').map((seg,i)=> i%2 ? seg :
+    seg.replace(/(?<![A-Za-z])(\$?)([A-Za-z]{1,2})(\$?)(\d+)(?![A-Za-z0-9(])/g,
+      (all,d1,c,d2,r)=> d1+c+d2+(d2 ? r : (+r+dr)))
+  ).join('"');
+}
+
+function same(a,b){
+  if(typeof a==='number'&&typeof b==='number') return Math.abs(a-b)<1e-9;
+  if(typeof a==='string'&&typeof b==='string') return a.trim().toLowerCase()===b.trim().toLowerCase();
+  return a===b;
+}
+
+/* =====================================================================
+   Tabellenblatt
+   ===================================================================== */
+class Sheet{
+  constructor(cfg){
+    Object.assign(this,cfg);
+    this.editable=this.editable||[];
+    this.fmt=this.fmt||{};
+    this.addrs=[];
+    for(let r=1;r<=this.rows;r++) for(const c of this.cols) this.addrs.push(c+r);
+    this.taskCells=new Set(); this.tasks.forEach(t=>(t.cells||[]).forEach(a=>this.taskCells.add(a)));
+    this.reset();
+    this.build();
+    this.update();
+  }
+  reset(){ this.cells={...this.init}; }
+  raw(a){ return this.cells[a]??''; }
+  isLocked(a){ return (a in this.init) && !this.editable.includes(a); }
+  get(a){
+    if(Object.prototype.hasOwnProperty.call(this.vals,a)){
+      const v=this.vals[a];
+      if(v instanceof XErr) throw new XErr(v.err,'Die Zelle '+a+' zeigt selbst einen Fehler ('+v.err+'). Korrigiere zuerst diese Zelle.');
+      return v;
+    }
+    if(this.visiting.has(a)) throw new XErr('#ZIRKEL!','Die Formel verwendet ihre eigene Zelle ('+a+'). Der Bereich darf die Ergebniszelle nicht enthalten.');
+    const raw=String(this.raw(a)).trim(); let v;
+    if(raw==='') v=null;
+    else if(raw[0]==='='){
+      this.visiting.add(a);
+      try{ v=evaluate(raw.slice(1),x=>this.get(x)); }
+      catch(e){ v = e instanceof XErr ? e : new XErr('#FEHLER','Die Formel konnte nicht berechnet werden.'); }
+      this.visiting.delete(a);
+      if(v===undefined) v=null;
+    }
+    else if(/^-?\d+(?:[.,]\d+)?$/.test(raw)) v=parseFloat(raw.replace(',','.'));
+    else v=raw;
+    this.vals[a]=v;
+    if(v instanceof XErr) throw new XErr(v.err,'Die Zelle '+a+' zeigt selbst einen Fehler ('+v.err+'). Korrigiere zuerst diese Zelle.');
+    return v;
+  }
+  recalc(){ this.vals={}; this.visiting=new Set(); for(const a of this.addrs){ try{ this.get(a); }catch(e){} } }
+  evalFormula(f){ return evaluate(f.slice(1),x=>this.get(x)); }
+
+  build(){
+    const host=document.getElementById(this.id);
+    const fbar=document.createElement('div'); fbar.className='fbar';
+    fbar.innerHTML='<span class="addr">A1</span><span class="fx">fx</span><span class="raw"></span>';
+    this.fAddr=fbar.querySelector('.addr'); this.fRaw=fbar.querySelector('.raw');
+    host.appendChild(fbar);
+    const wrap=document.createElement('div'); wrap.className='sheetwrap';
+    const tbl=document.createElement('table'); tbl.className='sheet';
+    let cg='<colgroup><col style="width:38px">'; for(const c of this.cols) cg+='<col style="width:'+(this.widths[c]||110)+'px">'; cg+='</colgroup>';
+    tbl.innerHTML=cg;
+    const thead=document.createElement('tr'); thead.innerHTML='<th class="rh"></th>'+this.cols.map(c=>'<th>'+c+'</th>').join('');
+    tbl.appendChild(thead);
+    this.inputs={}; this.tds={};
+    for(let r=1;r<=this.rows;r++){
+      const tr=document.createElement('tr');
+      const th=document.createElement('th'); th.textContent=r; th.className='rh'; tr.appendChild(th);
+      for(const c of this.cols){
+        const a=c+r; const td=document.createElement('td'); const inp=document.createElement('input');
+        inp.setAttribute('aria-label','Zelle '+a); inp.spellcheck=false; inp.autocomplete='off';
+        if(r===1) td.classList.add('head');
+        if(this.isLocked(a)){ td.classList.add('locked'); inp.readOnly=true; }
+        if(this.editable.includes(a)) td.classList.add('editable');
+        if(this.taskCells.has(a)) td.classList.add('task');
+        inp.addEventListener('focus',()=>{ inp.value=this.raw(a); this.fAddr.textContent=a; this.fRaw.textContent=this.raw(a); inp.classList.remove('r','errv'); });
+        inp.addEventListener('input',()=>{ this.fRaw.textContent=inp.value; });
+        inp.addEventListener('blur',()=>{ if(!inp.readOnly && inp.value!==this.raw(a)){ this.cells[a]=inp.value; this.update(); } else this.renderCell(a); });
+        inp.addEventListener('keydown',e=>{
+          if(e.key==='Enter'){ e.preventDefault(); const nx=this.inputs[c+(r+1)]; if(nx) nx.focus(); else inp.blur(); }
+          if(e.key==='Escape'){ inp.value=this.raw(a); inp.blur(); }
+        });
+        td.appendChild(inp); tr.appendChild(td);
+        this.inputs[a]=inp; this.tds[a]=td;
+      }
+      tbl.appendChild(tr);
+    }
+    wrap.appendChild(tbl); host.appendChild(wrap);
+    this.buildTasks();
+  }
+  renderCell(a){
+    const inp=this.inputs[a]; if(document.activeElement===inp) return;
+    const v=this.vals[a]; const col=splitAddr(a).c;
+    const cf=(this.cellFmt||{})[a];
+    inp.value=display(v,cf!==undefined?cf:this.fmt[col]);
+    inp.classList.toggle('r',typeof v==='number');
+    inp.classList.toggle('errv',v instanceof XErr);
+    inp.title = v instanceof XErr ? v.hint : '';
+  }
+  render(){ for(const a of this.addrs) this.renderCell(a); }
+
+  buildTasks(){
+    const ol=document.getElementById(this.id+'-tasks');
+    this.tasks.forEach((t,i)=>{
+      const li=document.createElement('li');
+      li.innerHTML='<div><span class="tnum">'+(t.label||('Aufgabe '+(i+1)))+':</span> '+t.text+'</div>';
+      const btns=document.createElement('div'); btns.className='tbtns';
+      if(t.fill){
+        const fb=document.createElement('button'); fb.className='small';
+        fb.textContent='⬇ Formel aus '+t.cells[0]+' nach unten ausfüllen (bis '+t.cells[t.cells.length-1]+')';
+        fb.addEventListener('click',()=>this.fill(t));
+        btns.appendChild(fb);
+      }
+      const tb=document.createElement('button'); tb.className='sec small'; tb.textContent='💡 Tipp';
+      const tip=document.createElement('div'); tip.className='tip'; tip.innerHTML=t.hint;
+      tb.addEventListener('click',()=>{ tip.classList.toggle('show'); t.attempted=true; this.updateSolBtn(t); });
+      btns.appendChild(tb);
+      const sb=document.createElement('button'); sb.className='sec small solbtn'; sb.textContent='🔑 Lösung anzeigen';
+      const sol=document.createElement('div'); sol.className='sol';
+      if(t.solution) sol.innerHTML='<b>Lösung:</b> '+t.solution;
+      else {
+        sol.innerHTML='<b>Lösung für '+t.cells[0]+':</b> <code></code>'+(t.fill?' – danach mit „Nach unten ausfüllen“ bis '+t.cells[t.cells.length-1]+' übernehmen.':'')+(t.solNote?'<br>'+t.solNote:'');
+        sol.querySelector('code').textContent=t.ref;
+      }
+      sb.addEventListener('click',()=>{ sol.classList.toggle('show'); sb.textContent=sol.classList.contains('show')?'🔑 Lösung ausblenden':'🔑 Lösung anzeigen'; });
+      btns.appendChild(sb);
+      li.appendChild(btns); li.appendChild(tip); li.appendChild(sol);
+      t.solBtn=sb;
+      const msg=document.createElement('div'); msg.className='msg'; li.appendChild(msg);
+      ol.appendChild(li);
+      t.li=li; t.msgEl=msg;
+    });
+  }
+  updateSolBtn(t){ if(t.solBtn) t.solBtn.classList.toggle('avail',!!t.attempted); }
+  touched(t){
+    const cells=t.custom ? this.editable : t.cells;
+    return cells.some(a=>String(this.raw(a)).trim()!==String(this.init[a]??'').trim());
+  }
+  fill(t){
+    t.attempted=true; this.updateSolBtn(t);
+    const src=t.cells[0]; const raw=String(this.raw(src)).trim();
+    if(!raw.startsWith('=')){ t.msgEl.className='msg err'; t.msgEl.textContent='Schreibe zuerst eine Formel in '+src+'.'; return; }
+    const base=rowOf(src);
+    for(const a of t.cells.slice(1)) this.cells[a]=shiftFormula(raw,rowOf(a)-base);
+    this.update();
+  }
+  checkCell(a,t,ref){
+    const raw=String(this.raw(a)).trim();
+    if(!raw) return {state:'empty'};
+    if(raw[0]!=='=') return {state:'bad',msg:a+': Hier steht keine Formel. Jede Formel beginnt mit einem Gleichheitszeichen =.'};
+    const v=this.vals[a];
+    if(v instanceof XErr) return {state:'bad',msg:a+' zeigt '+v.err+' – '+v.hint};
+    const up=raw.toUpperCase();
+    if(!new RegExp('(^|[^A-ZÄÖÜ])'+t.fn+'\\(').test(up)) return {state:'bad',msg:a+': '+(t.fnMsg||'Das Ergebnis soll mit der Funktion '+t.fn+' berechnet werden.')};
+    if(t.inner && !new RegExp('(^|[^A-ZÄÖÜ])'+t.fn+'\\((.*[^A-ZÄÖÜ])?'+t.inner+'\\(').test(up)) return {state:'bad',msg:a+': '+(t.innerMsg||'Verschachtle die Funktionen: Schreibe '+t.inner+' direkt in die Klammer von '+t.fn+' – ohne Hilfszellen.')};
+    const noStr=up.split('"').filter((s,i)=>i%2===0).join('');
+    if(!/[A-Z]{1,2}\$?\d+/.test(noStr.replace(new RegExp(t.fn+'\\(','g'),'('))) return {state:'bad',msg:a+': Verwende Zellbezüge (z. B. D2:D7) statt Zahlen abzutippen – dann rechnet Excel automatisch neu, wenn sich Werte ändern.'};
+    let exp; try{ exp=this.evalFormula(ref); }catch(e){ exp=undefined; }
+    if(exp!==undefined && same(v,exp)) return {state:'ok'};
+    return {state:'bad',msg:a+': '+(t.wrong||'Die Funktion stimmt, aber das Ergebnis noch nicht. Prüfe den Zellbereich.')};
+  }
+  check(t){
+    if(t.custom) return t.custom(this);
+    const cellRes={}; let okCount=0, firstBad=null;
+    const base=rowOf(t.cells[0]);
+    for(const a of t.cells){
+      const r=this.checkCell(a,t,shiftFormula(t.ref,rowOf(a)-base));
+      cellRes[a]=r.state;
+      if(r.state==='ok') okCount++; else if(r.state==='bad'&&!firstBad) firstBad=r.msg;
+    }
+    if(okCount===t.cells.length) return {state:'ok',msg:t.okMsg||'✔ Richtig!',cellRes};
+    if(firstBad) return {state:'bad',msg:firstBad,cellRes};
+    if(okCount>0) return {state:'partial',msg:'Die Formel in '+t.cells[0]+' ist richtig! Übernimm sie jetzt mit „Nach unten ausfüllen“ für alle Zeilen.',cellRes};
+    return {state:'',msg:'',cellRes};
+  }
+  renderTasks(){
+    for(const t of this.tasks){
+      const r=this.check(t);
+      t.state=r.state;
+      t.li.className=r.state;
+      t.msgEl.className='msg '+(r.state==='ok'?'okm':r.state==='bad'?'err':r.state==='partial'?'info':'');
+      t.msgEl.textContent=r.msg||'';
+      if(['ok','bad','partial'].includes(r.state)||this.touched(t)) t.attempted=true;
+      this.updateSolBtn(t);
+      if(r.cellRes) for(const [a,s] of Object.entries(r.cellRes)){
+        this.tds[a].classList.toggle('ok',s==='ok');
+        this.tds[a].classList.toggle('bad',s==='bad');
+      }
+    }
+  }
+  solved(){ return this.tasks.filter(t=>t.state==='ok').length; }
+  update(){ this.recalc(); this.render(); this.renderTasks(); updateProgress(); }
+}
+
+/* =====================================================================
+   Inhalte
+   ===================================================================== */
+const MATCH = [
+  {q:'Wie viele Punkte hat die ganze Klasse <b>zusammen</b> erreicht?', a:'SUMME'},
+  {q:'Wie weit ist der <b>beste</b> Springer gesprungen?', a:'MAX'},
+  {q:'Wie lautet die <b>schnellste</b> Zeit im 100-m-Lauf?', a:'MIN'},
+  {q:'Wie viele Punkte hat jemand <b>im Durchschnitt</b>?', a:'MITTELWERT'},
+  {q:'Was kosten <b>8 Trikots zu je 24,90 €</b>?', a:'PRODUKT'},
+  {q:'Hat Mia die Norm geschafft – <b>ja oder nein</b>?', a:'WENN'}
+];
+const FN_LIST=['SUMME','MIN','MAX','MITTELWERT','PRODUKT','WENN'];
+
+const QUIZ = [
+  {q:'Welches Ergebnis liefert <code>=MAX(3;8;5)</code>?', o:['3','5','8','16'], a:2, ex:'MAX gibt die größte Zahl zurück – hier 8.'},
+  {q:'Welches Ergebnis liefert <code>=MITTELWERT(2;4;9)</code>?', o:['15','5','4','9'], a:1, ex:'(2 + 4 + 9) ÷ 3 = 15 ÷ 3 = 5.'},
+  {q:'Welches Ergebnis liefert <code>=PRODUKT(2;3;4)</code>?', o:['9','12','24','234'], a:2, ex:'2 · 3 · 4 = 24. PRODUKT multipliziert alle Zahlen.'},
+  {q:'Welches Ergebnis liefert <code>=MIN(4;-2;0)</code>?', o:['0','-2','4','2'], a:1, ex:'−2 ist kleiner als 0 – also ist −2 das Minimum.'},
+  {q:'Welche Formel addiert in deutschem Excel alle Werte von A1 bis A5?', o:['SUMME(A1:A5)','=SUMME(A1:A5)','=SUM(A1:A5)','=SUMME(A1,A5)'], a:1, ex:'Formeln beginnen mit =, die Funktion heißt SUMME und ein Bereich wird mit Doppelpunkt geschrieben.'},
+  {q:'Welche Zellen addiert <code>=SUMME(A1;A3)</code>?', o:['A1, A2 und A3','nur A1 und A3','keine – die Formel ist falsch','A1 bis A3 und dann noch einmal A3'], a:1, ex:'Das Semikolon trennt einzelne Werte. Für einen Bereich bräuchte man den Doppelpunkt: A1:A3.'},
+  {q:'In B2 steht 50. Was zeigt <code>=WENN(B2&gt;=50;"bestanden";"nicht bestanden")</code>?', o:['bestanden','nicht bestanden','50','FALSCH'], a:0, ex:'>= bedeutet „größer oder gleich“. 50 ist gleich 50, also ist die Bedingung erfüllt.'},
+  {q:'Welches Ergebnis liefert <code>=SUMME(MAX(2;7);MIN(4;1))</code>?', o:['14','8','11','5'], a:1, ex:'Von innen nach außen: MAX(2;7) = 7 und MIN(4;1) = 1. Dann SUMME(7;1) = 8.'},
+  {q:'Warum zeigt <code>=WENN(A1&gt;10;ja;nein)</code> einen Fehler?', o:['Text muss in Anführungszeichen stehen: "ja"','WENN braucht vier Teile','> ist in Excel nicht erlaubt','Das = am Anfang ist zu viel'], a:0, ex:'Ohne Anführungszeichen hält Excel ja und nein für Namen, die es nicht kennt (#NAME?).'}
+];
+
+/* =====================================================================
+   Oberfläche
+   ===================================================================== */
+let matchScore=0;
+const quizState=QUIZ.map(()=>null);
+let sheet1, sheet2, sheet3;
+
+function updateProgress(){
+  if(!sheet1||!sheet2||!sheet3) return;
+  const q=quizState.filter(x=>x===true).length;
+  const s1=sheet1.solved(), s2=sheet2.solved(), s3=sheet3.solved();
+  const got=matchScore+s1+s2+s3+q;
+  const total=MATCH.length+sheet1.tasks.length+sheet2.tasks.length+sheet3.tasks.length+QUIZ.length;
+  document.getElementById('pbar').style.width=(100*got/total)+'%';
+  document.getElementById('ptxt').textContent=got+' von '+total+' Punkten';
+  const rows=[
+    ['Teil 1 – Zuordnung',matchScore,MATCH.length],
+    ['Teil 2 – Sportfest',s1,sheet1.tasks.length],
+    ['Teil 3 – Einkauf',s2,sheet2.tasks.length],
+    ['Teil 4 – Verschachteln',s3,sheet3.tasks.length],
+    ['Teil 5 – Schnelltest',q,QUIZ.length]
+  ];
+  const name=document.getElementById('studentName').value.trim();
+  document.getElementById('summary').innerHTML=
+    (name?'<div class="srow"><span>Vorname</span><span>'+name.replace(/[<>&]/g,'')+'</span></div>':'')+
+    rows.map(r=>'<div class="srow"><span>'+r[0]+'</span><span>'+r[1]+' / '+r[2]+'</span></div>').join('')+
+    '<div class="srow total"><span>Gesamt</span><span>'+got+' / '+total+'</span></div>';
+  const pct=got/total;
+  document.getElementById('final').textContent =
+    pct===1 ? '🏆 Perfekt! Du beherrschst alle sechs Funktionen.' :
+    pct>=0.75 ? '👍 Sehr gut! Schau dir die offenen Aufgaben noch einmal an.' :
+    pct>=0.4 ? '💪 Guter Anfang – nutze die Tipps bei den offenen Aufgaben.' :
+    'Arbeite die Teile der Reihe nach durch. Die Tipp-Knöpfe helfen dir!';
+}
+
+function initMatch(){
+  const host=document.getElementById('match');
+  const msb=document.getElementById('matchSol');
+  msb.addEventListener('click',()=>{
+    const show=!MATCH[0].solEl.classList.contains('show');
+    MATCH.forEach(m=>m.solEl.classList.toggle('show',show));
+    msb.textContent=show?'🔑 Lösung ausblenden':'🔑 Lösung anzeigen';
+  });
+  MATCH.forEach((m,i)=>{
+    const row=document.createElement('div'); row.className='mrow';
+    row.innerHTML='<span class="mark"></span><span class="q">'+m.q+'</span>';
+    const sel=document.createElement('select');
+    sel.innerHTML='<option value="">– Funktion wählen –</option>'+FN_LIST.map(f=>'<option>'+f+'</option>').join('');
+    sel.addEventListener('change',()=>{ row.classList.remove('ok','bad'); row.querySelector('.mark').textContent=''; });
+    const ms=document.createElement('span'); ms.className='msol'; ms.textContent='→ '+m.a;
+    row.appendChild(sel); row.appendChild(ms); host.appendChild(row); m.row=row; m.sel=sel; m.solEl=ms;
+  });
+  document.getElementById('matchBtn').addEventListener('click',()=>{
+    let n=0;
+    MATCH.forEach(m=>{
+      const ok=m.sel.value===m.a; if(ok) n++;
+      m.row.classList.toggle('ok',ok); m.row.classList.toggle('bad',!ok);
+      m.row.querySelector('.mark').textContent= ok?'✔':'✘';
+    });
+    matchScore=n;
+    document.getElementById('matchSol').classList.add('avail');
+    const res=document.getElementById('matchRes');
+    res.className='msg '+(n===MATCH.length?'okm':'err');
+    res.textContent= n===MATCH.length ? 'Alles richtig!' : n+' von '+MATCH.length+' richtig – ändere die rot markierten und prüfe erneut.';
+    updateProgress();
+  });
+}
+
+function initQuiz(){
+  const host=document.getElementById('quiz');
+  QUIZ.forEach((item,i)=>{
+    const d=document.createElement('div'); d.className='qitem';
+    d.innerHTML='<div class="qq">'+(i+1)+'. '+item.q+'</div>';
+    const opts=document.createElement('div'); opts.className='opts';
+    const ex=document.createElement('div'); ex.className='qex';
+    item.o.forEach((o,j)=>{
+      const b=document.createElement('button'); b.textContent=o;
+      b.addEventListener('click',()=>{
+        if(quizState[i]!==null) return;
+        const ok=j===item.a; quizState[i]=ok;
+        [...opts.children].forEach((bb,k)=>{ bb.disabled=true; if(k===item.a) bb.classList.add('right'); });
+        if(!ok) b.classList.add('wrong');
+        ex.innerHTML=(ok?'✔ <b>Richtig!</b> ':'✘ <b>Leider falsch.</b> ')+item.ex;
+        ex.classList.add('show');
+        updateProgress();
+      });
+      opts.appendChild(b);
+    });
+    d.appendChild(opts); d.appendChild(ex); host.appendChild(d);
+  });
+}
+
+function range(col,r1,r2){ const a=[]; for(let r=r1;r<=r2;r++) a.push(col+r); return a; }
+
+function initSheets(){
+  sheet1=new Sheet({
+    id:'s1', cols:['A','B','C','D','E'], rows:11,
+    widths:{A:150,B:130,C:110,D:100,E:110},
+    fmt:{B:2,C:1},
+    init:{
+      A1:'Name',B1:'Weitsprung (m)',C1:'100 m (s)',D1:'Punkte',E1:'Urkunde?',
+      A2:'Lena', B2:'4,35',C2:'13,8',D2:'512',
+      A3:'Tom',  B3:'4,80',C3:'13,1',D3:'640',
+      A4:'Mia',  B4:'3,95',C4:'14,6',D4:'410',
+      A5:'Jonas',B5:'5,10',C5:'12,9',D5:'702',
+      A6:'Sara', B6:'4,20',C6:'14,0',D6:'500',
+      A7:'Paul', B7:'3,70',C7:'15,2',D7:'365',
+      A9:'Summe Punkte', A10:'Durchschnitt', A11:'Bestwert'
+    },
+    tasks:[
+      {cells:['D9'],fn:'SUMME',ref:'=SUMME(D2:D7)',
+       text:'Berechne in <b>D9</b> die <b>Summe</b> aller Punkte.',
+       hint:'Aufbau: <code>=SUMME(erste Zelle:letzte Zelle)</code>. Die Punkte stehen in Spalte D, Zeile 2 bis 7.',
+       wrong:'Die Funktion stimmt, aber der Bereich noch nicht. Es sollen genau die Punkte von D2 bis D7 addiert werden.'},
+      {cells:['D10'],fn:'MITTELWERT',ref:'=MITTELWERT(D2:D7)',
+       text:'Berechne in <b>D10</b> den <b>Durchschnitt</b> der Punkte.',
+       hint:'Der Durchschnitt heißt in Excel <code>MITTELWERT</code>. Achtung: Die Summe in D9 darf nicht mitgezählt werden!',
+       wrong:'Prüfe den Bereich: Nur die sechs Werte von D2 bis D7 gehören hinein – nicht die Summe in D9.'},
+      {cells:['B11'],fn:'MAX',ref:'=MAX(B2:B7)',
+       text:'Ermittle in <b>B11</b> die <b>weiteste</b> Sprungweite.',
+       hint:'Gesucht ist die größte Zahl in B2 bis B7.',
+       wrong:'Prüfe den Bereich: Die Sprungweiten stehen in B2 bis B7.'},
+      {cells:['C11'],fn:'MIN',ref:'=MIN(C2:C7)',solNote:'Beim Laufen ist die kürzeste Zeit die beste – deshalb MIN und nicht MAX.',
+       text:'Ermittle in <b>C11</b> die <b>beste</b> Zeit im 100-m-Lauf. Überlege genau: Ist die beste Zeit die größte oder die kleinste Zahl?',
+       hint:'Beim Laufen ist die <b>kürzeste</b> Zeit die beste – gesucht ist also die kleinste Zahl.',
+       fnMsg:'Überlege noch einmal: Ist beim Laufen die größte oder die kleinste Zeit die beste?',
+       wrong:'Prüfe den Bereich: Die Laufzeiten stehen in C2 bis C7.'},
+      {cells:range('E',2,7),fn:'WENN',ref:'=WENN(D2>=500;"Urkunde";"keine")',fill:true,solNote:'Wichtig ist <code>&gt;=</code>: Sara hat genau 500 Punkte und bekommt deshalb eine Urkunde.',
+       text:'Wer <b>mindestens 500 Punkte</b> hat, bekommt eine Urkunde. Schreibe in <b>E2</b> eine WENN-Formel, die <b>Urkunde</b> oder <b>keine</b> anzeigt. Fülle sie danach bis E7 aus.',
+       hint:'Aufbau: <code>=WENN(Bedingung;"Dann-Text";"Sonst-Text")</code>. „Mindestens 500“ bedeutet: 500 zählt mit!',
+       wrong:'Prüfe die Bedingung („mindestens 500“ – schau dir Sara genau an!) und die Schreibweise der Wörter Urkunde und keine.'}
+    ]
+  });
+
+  const bonus = s => {
+    const pre=s.tasks.slice(0,3).every(t=>s.check(t).state==='ok');
+    if(!pre) return {state:'',msg:'(Löse zuerst die Aufgaben 1 bis 3.)'};
+    for(const a of range('B',2,6)){
+      const v=s.vals[a];
+      if(typeof v!=='number'||!Number.isInteger(v)||v<1) return {state:'bad',msg:a+': Hier muss eine ganze Zahl von mindestens 1 stehen – von jedem Artikel wird etwas gekauft.'};
+    }
+    const r=s.vals['D10'];
+    if(typeof r==='string'&&r.trim().toLowerCase()==='passt') return {state:'ok',msg:'✔ Super! Excel hat alles automatisch neu berechnet – genau dafür sind Formeln da.'};
+    return {state:'',msg:''};
+  };
+
+  sheet2=new Sheet({
+    id:'s2', cols:['A','B','C','D'], rows:10,
+    widths:{A:170,B:100,C:110,D:120},
+    fmt:{C:2,D:2},
+    editable:range('B',2,6),
+    init:{
+      A1:'Artikel',B1:'Anzahl',C1:'Preis (€)',D1:'Gesamt (€)',
+      A2:'Wasserflaschen',B2:'12',C2:'0,59',
+      A3:'Bananen',B3:'20',C3:'0,25',
+      A4:'Müsliriegel',B4:'15',C4:'0,89',
+      A5:'Isodrinks',B5:'10',C5:'1,49',
+      A6:'Tape-Rollen',B6:'4',C6:'2,99',
+      A8:'Gesamtkosten', A9:'Budget', D9:'50', A10:'Ergebnis'
+    },
+    tasks:[
+      {cells:range('D',2,6),fn:'PRODUKT',ref:'=PRODUKT(B2;C2)',fill:true,solNote:'Ebenfalls richtig: <code>=PRODUKT(B2:C2)</code> – der Bereich B2:C2 enthält genau dieselben zwei Zellen.',
+       text:'Berechne in <b>D2</b> mit <b>PRODUKT</b>, was die Wasserflaschen insgesamt kosten (Anzahl × Preis). Fülle die Formel danach bis D6 aus.',
+       hint:'PRODUKT multipliziert alle Zahlen in der Klammer. Zwei einzelne Zellen trennst du mit einem Semikolon, z. B. <code>=PRODUKT(X1;Y1)</code>.',
+       wrong:'Es sollen die Anzahl (Spalte B) und der Preis (Spalte C) aus derselben Zeile multipliziert werden.'},
+      {cells:['D8'],fn:'SUMME',ref:'=SUMME(D2:D6)',
+       text:'Berechne in <b>D8</b> die Gesamtkosten des Einkaufs.',
+       hint:'Addiere alle Werte aus Spalte D von Zeile 2 bis 6.',
+       wrong:'Prüfe den Bereich: Es geht um D2 bis D6.'},
+      {cells:['D10'],fn:'WENN',ref:'=WENN(D8>D9;"zu teuer";"passt")',solNote:'Ebenfalls richtig: <code>=WENN(D8&lt;=D9;"passt";"zu teuer")</code> – Bedingung umgedreht, Dann- und Sonst-Wert getauscht.',
+       text:'Prüfe in <b>D10</b> mit WENN: Sind die Gesamtkosten (D8) <b>größer</b> als das Budget (D9), soll <b>zu teuer</b> erscheinen, sonst <b>passt</b>.',
+       hint:'Die Bedingung vergleicht zwei Zellen: <code>D8&gt;D9</code>. Text immer in Anführungszeichen setzen.',
+       wrong:'Prüfe die Bedingung (D8 größer als D9) und die genaue Schreibweise von „zu teuer“ und „passt“.'},
+      {label:'Bonus',custom:bonus,
+       solution:'Zum Beispiel die Anzahl der Tape-Rollen (B6) von 4 auf 3 senken. Dann kostet der Einkauf 49,30 € und D10 zeigt „passt“. Andere Änderungen sind auch möglich.',
+       text:'Der Einkauf ist zu teuer! Ändere in den <b>blauen Zellen</b> (Spalte B) die Anzahl so, dass in D10 <b>passt</b> erscheint. Von jedem Artikel muss mindestens 1 Stück gekauft werden.',
+       hint:'Verringere eine Anzahl ein wenig und beobachte, wie sich D8 und D10 sofort von selbst ändern.'}
+    ]
+  });
+
+  const M='MAX(B2:D2);MAX(B3:D3);MAX(B4:D4);MAX(B5:D5)';
+  sheet3=new Sheet({
+    id:'s3', cols:['A','B','C','D'], rows:12,
+    widths:{A:260,B:110,C:110,D:110},
+    fmt:{B:2,C:2,D:2},
+    cellFmt:{B10:1,B12:0},
+    init:{
+      A1:'Name',B1:'1. Versuch (m)',C1:'2. Versuch (m)',D1:'3. Versuch (m)',
+      A2:'Lena', B2:'7,85', C2:'8,12', D2:'7,90',
+      A3:'Tom',  B3:'9,40', C3:'9,05', D3:'9,72',
+      A4:'Mia',  B4:'8,30', C4:'8,64', D4:'8,51',
+      A5:'Jonas',B5:'10,15',C5:'9,88', D5:'10,02',
+      A7:'Mannschaftswertung (Summe der Bestleistungen)',
+      A8:'Durchschnitt der Bestleistungen',
+      A9:'Schwächste Bestleistung im Team',
+      A10:'Bonuspunkte für den weitesten Stoß',
+      A12:'Bonuspunkte pro Meter', B12:'50'
+    },
+    tasks:[
+      {cells:['B7'],fn:'SUMME',inner:'MAX',ref:'=SUMME('+M+')',
+       text:'Berechne in <b>B7</b> die <b>Mannschaftswertung</b>: Addiere den besten Versuch jeder Person – in einer einzigen Formel.',
+       hint:'Außen steht SUMME, innen für jede Person ein MAX über ihre drei Versuche, getrennt durch Semikolon: <code>=SUMME(MAX(B2:D2);MAX(…);…)</code>',
+       wrong:'Prüfe, ob du für alle vier Personen (Zeile 2 bis 5) jeweils den besten ihrer drei Versuche (Spalte B bis D) addierst.'},
+      {cells:['B8'],fn:'MITTELWERT',inner:'MAX',ref:'=MITTELWERT('+M+')',
+       text:'Berechne in <b>B8</b> den <b>Durchschnitt der Bestleistungen</b> – wieder in einer einzigen Formel.',
+       hint:'Gleicher Aufbau wie in B7, nur die äußere Funktion ist eine andere.',
+       wrong:'Es sollen genau die vier Bestleistungen (je ein MAX pro Zeile 2 bis 5) gemittelt werden.'},
+      {cells:['B9'],fn:'MIN',inner:'MAX',ref:'=MIN('+M+')',
+       text:'Wer muss noch aufholen? Ermittle in <b>B9</b> die <b>schwächste</b> der vier Bestleistungen.',
+       hint:'Innen brauchst du wieder die Bestleistung jeder Person. Außen suchst du davon den kleinsten Wert.',
+       fnMsg:'Gesucht ist der kleinste Wert unter den Bestleistungen. Welche Funktion findet den kleinsten Wert?',
+       innerMsg:'Die Bestleistung jeder Person musst du innen mit MAX bestimmen – die äußere Funktion sucht dann den kleinsten davon.',
+       wrong:'Prüfe die Reihenfolge: Innen MAX für jede Person, außen die Funktion für den kleinsten Wert.'},
+      {cells:['B10'],fn:'PRODUKT',inner:'MAX',ref:'=PRODUKT(MAX(B2:D5);B12)',solNote:'Excel bestimmt zuerst innen MAX(B2:D5) = 10,15 und multipliziert dann mit 50.',
+       text:'Für jeden Meter des <b>weitesten Stoßes im ganzen Team</b> gibt es die Bonuspunkte aus B12. Berechne in <b>B10</b> die Bonuspunkte mit PRODUKT.',
+       hint:'Den weitesten Stoß aller Versuche findest du mit MAX über die ganze Tabelle B2:D5. Dieses Ergebnis multiplizierst du mit B12.',
+       wrong:'Der weiteste Stoß aller Versuche steht irgendwo in B2 bis D5 – nimm den ganzen Bereich und multipliziere mit B12.'}
+    ]
+  });
+  document.getElementById('s3-reset').addEventListener('click',()=>{ if(confirm('Alle Eingaben in dieser Tabelle löschen?')){ sheet3.reset(); sheet3.update(); }});
+
+  document.getElementById('s1-reset').addEventListener('click',()=>{ if(confirm('Alle Eingaben in dieser Tabelle löschen?')){ sheet1.reset(); sheet1.update(); }});
+  document.getElementById('s2-reset').addEventListener('click',()=>{ if(confirm('Alle Eingaben in dieser Tabelle löschen?')){ sheet2.reset(); sheet2.update(); }});
+}
+
+if(typeof document!=='undefined'){
+  initMatch();
+  initQuiz();
+  initSheets();
+  document.getElementById('studentName').addEventListener('input',updateProgress);
+  updateProgress();
+}
+</script>
+</body>
+</html>
