@@ -1,0 +1,399 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Present Perfect Check-up</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: a self-study stepper. Step chips on top, one lesson card at a time, Back/Next at the bottom; the last step holds three practice exercises with stars */
+:root{
+  --bg:#eef4ff; --paper:#ffffff; --ink:#1b2333; --muted:#566178; --line:#d4dcec;
+  --accent:#2347b8; --accent-soft:#dfe7ff; --mark:#ffd84d;
+  --c1:#0e8f7e; --c1-soft:#d8f4ef; --c2:#e0702b; --c2-soft:#ffe9da; --c3:#7a4fd6; --c3-soft:#ece4ff;
+  --pp:#2347b8; --pp-soft:#dfe7ff; --past:#c2410c; --past-soft:#ffe6d6;
+  --ok:#1f7a4a; --ok-soft:#dff3e7; --bad:#b3261e; --bad-soft:#fbe3e1;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10141f; --paper:#1a2030; --ink:#e9edf5; --muted:#a4adbf; --line:#2f3852;
+  --accent:#93abff; --accent-soft:#25305a; --mark:#8a6f0e;
+  --c1:#4fd1bd; --c1-soft:#143a35; --c2:#ff9d5c; --c2-soft:#3d2614; --c3:#b49bff; --c3-soft:#2c2350;
+  --pp:#93abff; --pp-soft:#25305a; --past:#ff9d5c; --past-soft:#3d2614;
+  --ok:#6fd39c; --ok-soft:#173a29; --bad:#ff9a92; --bad-soft:#47201d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141f; --paper:#1a2030; --ink:#e9edf5; --muted:#a4adbf; --line:#2f3852;
+  --accent:#93abff; --accent-soft:#25305a; --mark:#8a6f0e;
+  --c1:#4fd1bd; --c1-soft:#143a35; --c2:#ff9d5c; --c2-soft:#3d2614; --c3:#b49bff; --c3-soft:#2c2350;
+  --pp:#93abff; --pp-soft:#25305a; --past:#ff9d5c; --past-soft:#3d2614;
+  --ok:#6fd39c; --ok-soft:#173a29; --bad:#ff9a92; --bad-soft:#47201d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px;
+  background-image:radial-gradient(var(--line) 1.2px,transparent 1.2px);background-size:22px 22px}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(1.9rem,6vw,2.7rem);font-weight:800}
+h1 .hl{background:linear-gradient(transparent 58%,var(--mark) 58%);padding:0 4px}
+h2{font-size:1.6rem;font-weight:800}
+h3{font-size:1.15rem;font-weight:800}
+p{margin:0}
+.eyebrow{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.muted{color:var(--muted)}
+
+.hero{background:var(--paper);border:2px solid var(--ink);border-radius:18px;padding:20px clamp(16px,4vw,28px);box-shadow:6px 6px 0 var(--ink);display:flex;flex-direction:column;gap:8px}
+
+/* step chips */
+nav.steps{display:flex;flex-wrap:wrap;gap:8px}
+nav.steps button{font:inherit;font-size:.92rem;font-weight:700;border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:4px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+nav.steps button .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--line);color:var(--ink);font-size:.8rem}
+nav.steps button[aria-current="step"]{border-color:var(--ink);color:var(--ink);background:var(--mark)}
+nav.steps button[aria-current="step"] .n{background:var(--ink);color:var(--paper)}
+nav.steps button.done .n{background:var(--ok);color:var(--paper)}
+.progress{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* lesson card */
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--accent);padding:22px clamp(16px,4vw,28px);display:flex;flex-direction:column;gap:16px}
+.card p,.card li{max-width:66ch}
+.card ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.pp{color:var(--pp);font-weight:700;background:var(--pp-soft);border-radius:4px;padding:0 3px}
+.sp{color:var(--past);font-weight:700;background:var(--past-soft);border-radius:4px;padding:0 3px}
+.box{border:2px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.rule{background:var(--accent-soft);border:2px solid var(--accent);border-radius:12px;padding:12px 14px;font-weight:700;text-align:center;font-size:1.1rem}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:.97rem}
+.tbl th,.tbl td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-family:var(--display);font-size:.95rem}
+/* irregular verbs: the 3rd form column is the star of the table */
+#irr th:nth-child(3),#irr td:nth-child(3){background:var(--pp-soft);color:var(--pp);font-weight:800;font-size:1.08em;border-left:3px solid var(--pp);border-right:3px solid var(--pp)}
+#irr th:nth-child(3){background:var(--pp);color:var(--paper);border-radius:8px 8px 0 0}
+#irr tr:last-child td:nth-child(3){border-bottom:3px solid var(--pp)}
+#irrTbl.hidecol #irr td:nth-child(3){color:transparent;cursor:pointer;background:repeating-linear-gradient(-45deg,var(--pp-soft) 0 8px,var(--line) 8px 16px)}
+#irrTbl.hidecol #irr td:nth-child(3).peek,#irrTbl.hidecol #irr td:nth-child(3):hover,#irrTbl.hidecol #irr td:nth-child(3):focus{color:var(--pp);background:var(--pp-soft)}
+.selftest{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;border:2px dashed var(--c2);background:var(--c2-soft);border-radius:12px;padding:12px 14px}
+.selftest p{flex:1 1 260px;font-size:.95rem}
+.toggle{font:inherit;font-weight:800;font-size:1.02rem;display:inline-flex;align-items:center;gap:8px;border:2px solid var(--ink);border-radius:12px;padding:9px 16px;cursor:pointer;background:var(--c2);color:var(--paper);box-shadow:3px 3px 0 var(--ink)}
+.toggle svg{width:22px;height:22px;flex:none}
+.toggle[aria-pressed="true"]{background:var(--paper);color:var(--ink)}
+.toggle:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.merk{display:flex;gap:14px;align-items:center;border:3px solid var(--ink);background:var(--mark);color:var(--ink);border-radius:14px;padding:14px 18px;box-shadow:4px 4px 0 var(--ink)}
+.merk .tag{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--mark);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.merk p{font-weight:700;font-size:1.15rem;line-height:1.4}
+.uses{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.use{border:2px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.use .eg{font-style:italic}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{border:2px solid var(--pp);background:var(--pp-soft);border-radius:999px;padding:1px 12px;font-weight:700}
+.chips.past span{border-color:var(--past);background:var(--past-soft)}
+figure{margin:0;overflow-x:auto}
+figure svg{width:100%;min-width:520px;height:auto;display:block}
+figcaption{font-size:.9rem;color:var(--muted);margin-top:4px}
+
+/* quick check */
+.quick{border:2px dashed var(--c1);background:var(--c1-soft);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.quick .q{font-weight:700}
+.quick .opts{display:flex;flex-wrap:wrap;gap:8px}
+.quick button{font:inherit;border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:10px;padding:4px 14px;cursor:pointer}
+.quick .fb{font-weight:700;min-height:1.6em}
+
+/* practice */
+.ex{border:2px solid var(--ink);border-radius:16px;overflow:hidden;--c:var(--c1);--cs:var(--c1-soft)}
+.ex.e2{--c:var(--c2);--cs:var(--c2-soft)} .ex.e3{--c:var(--c3);--cs:var(--c3-soft)}
+.exhead{background:var(--cs);border-bottom:2px solid var(--ink);padding:12px 16px}
+.exhead .eyebrow{color:var(--c)}
+.exbody{padding:16px;display:flex;flex-direction:column;gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:8px}
+.grid label{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1.5px solid var(--line);border-radius:10px}
+.grid label b{min-width:4.5em}
+.sent{display:flex;flex-direction:column;gap:10px}
+.sent p{line-height:2.1}
+.sent .no{color:var(--c);font-weight:700;margin-right:4px}
+input[type=text],select{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:3px 8px;min-width:0}
+.grid input{width:100%}
+.sent input{width:9.5em}
+.sent input.w{width:12.5em}
+.sent select{max-width:100%}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{border-color:var(--ok)!important;background:var(--ok-soft)!important}
+.bad{border-color:var(--bad)!important;background:var(--bad-soft)!important}
+.sol{margin-left:4px;font-size:.88rem;color:var(--ok);font-weight:700}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:2px dashed var(--line);padding-top:12px}
+button.b{font:inherit;font-weight:700;border-radius:10px;padding:7px 15px;cursor:pointer;border:2px solid var(--ink)}
+.b-check{background:var(--c);color:var(--paper);box-shadow:3px 3px 0 var(--ink)}
+.b-sol{background:var(--paper);color:var(--ink)}
+.b-reset{background:transparent;color:var(--muted);border-color:var(--line)!important}
+.score{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.score mark{background:var(--mark);color:var(--ink);padding:0 6px;border-radius:4px}
+@media (max-width:520px){.score{margin-left:0;width:100%}}
+
+.stars{display:flex;align-items:center;gap:8px;font-weight:700}
+.star{width:22px;height:22px;flex:none}
+.star path{fill:var(--line);stroke:var(--muted);stroke-width:1.5}
+.star.on path{fill:var(--mark);stroke:var(--ink)}
+
+.pager{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pager button{font:inherit;font-weight:700;border-radius:12px;padding:10px 18px;cursor:pointer;border:2px solid var(--ink);background:var(--paper);color:var(--ink)}
+.pager .next{background:var(--accent);color:var(--paper);box-shadow:3px 3px 0 var(--ink)}
+.pager button:disabled{opacity:.35;cursor:default;box-shadow:none}
+footer{color:var(--muted);font-size:.88rem;text-align:center;line-height:1.7}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">English · Klasse 7 · Grammar revision</div>
+  <h1>The <span class="hl">Present Perfect</span></h1>
+  <p class="muted">Work through the steps on your own. Each step has a quick check. At the end you can practise and win three stars.</p>
+  <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+  <nav class="steps" id="steps" aria-label="Steps"></nav>
+</header>
+
+<main id="main">
+
+<!-- STEP 1 -->
+<section class="card" data-step="Warm-up">
+  <div><div class="eyebrow">Step 1</div><h2>What is it about?</h2></div>
+  <div class="merk"><span class="tag">Merksatz</span><p>Present perfect wird gewählt,<br>wenn einzig das Ergebnis zählt<br>oder wenn’s bis heute hält.</p></div>
+  <p>Read Maya’s message to her old friend Chloe. Look at the blue words.</p>
+  <div class="box">
+    <p>Hi Chloe! We <span class="pp">have moved</span> to Glasgow. I <span class="pp">have</span> already <span class="pp">unpacked</span> my boxes, but my brother <span class="pp">hasn’t found</span> his football yet. Dad’s car <span class="pp">has broken down</span> again, so we can’t go to the beach. <span class="pp">Have</span> you ever <span class="pp">been</span> to Scotland? Come and visit me! Love, Maya</p>
+  </div>
+  <p>All the blue words are in the <b>present perfect</b>. Something happened in the past, but Maya is interested in <b>now</b>: her boxes are empty now, the car doesn’t work now.</p>
+  <figure>
+    <svg viewBox="0 0 640 170" role="img" aria-label="Timeline: an action in the past is connected to now">
+      <line x1="30" y1="110" x2="610" y2="110" style="stroke:var(--ink);stroke-width:3"/>
+      <path d="M600 102l14 8-14 8z" style="fill:var(--ink)"/>
+      <text x="40" y="145" style="font:700 15px var(--body);fill:var(--muted)">past</text>
+      <line x1="520" y1="88" x2="520" y2="132" style="stroke:var(--pp);stroke-width:4"/>
+      <text x="520" y="155" text-anchor="middle" style="font:800 16px var(--display);fill:var(--pp)">NOW</text>
+      <circle cx="230" cy="110" r="10" style="fill:var(--pp)"/>
+      <text x="230" y="145" text-anchor="middle" style="font:700 14px var(--body);fill:var(--ink)">The car broke down.</text>
+      <path d="M232 98 C 300 20, 450 20, 516 92" style="fill:none;stroke:var(--pp);stroke-width:3;stroke-dasharray:7 6"/>
+      <path d="M506 86l12 8 0-14z" style="fill:var(--pp)"/>
+      <rect x="290" y="16" width="190" height="30" rx="8" style="fill:var(--pp-soft);stroke:var(--pp);stroke-width:2"/>
+      <text x="385" y="36" text-anchor="middle" style="font:700 14px var(--body);fill:var(--ink)">We can’t use it now.</text>
+    </svg>
+    <figcaption>The present perfect builds a bridge from the past to now.</figcaption>
+  </figure>
+  <div class="quick" data-answer="1">
+    <p class="q">Quick check: Why does Maya say “I have unpacked my boxes”?</p>
+    <div class="opts"><button type="button">She will unpack them tomorrow.</button><button type="button">The boxes are empty now.</button><button type="button">She unpacked them in 2019.</button></div>
+    <p class="fb" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- STEP 2 -->
+<section class="card" data-step="Form" hidden>
+  <div><div class="eyebrow">Step 2</div><h2>How do you form it?</h2></div>
+  <div class="rule">have / has + past participle (3rd form)</div>
+  <div class="tbl"><table>
+    <tr><th></th><th>I / you / we / they</th><th>he / she / it</th></tr>
+    <tr><td><b>+</b></td><td>I <span class="pp">have (’ve) packed</span></td><td>She <span class="pp">has (’s) packed</span></td></tr>
+    <tr><td><b>–</b></td><td>I <span class="pp">haven’t packed</span></td><td>She <span class="pp">hasn’t packed</span></td></tr>
+    <tr><td><b>?</b></td><td><span class="pp">Have</span> you <span class="pp">packed</span>? – Yes, I have. / No, I haven’t.</td><td><span class="pp">Has</span> she <span class="pp">packed</span>? – Yes, she has. / No, she hasn’t.</td></tr>
+  </table></div>
+  <div class="cols">
+    <div class="box"><h3>Regular verbs: + -ed</h3>
+      <ul><li>pack → packed, move → moved</li><li>stop → sto<b>pp</b>ed, hug → hu<b>gg</b>ed</li><li>try → tr<b>ied</b>, carry → carr<b>ied</b></li></ul></div>
+    <div class="box"><h3>Irregular verbs</h3>
+      <p>You have to learn the 3rd form, for example <i>to do, did, done</i>. Look at the list in your book (p. 301–303).</p></div>
+  </div>
+  <h3>Important irregular verbs</h3>
+  <div class="selftest">
+    <p><b>Test yourself!</b> Press the button. The <b>3rd form</b> disappears. Say it aloud, then tap the striped box to check.</p>
+    <button type="button" class="toggle" id="hideCol" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" style="fill:none;stroke:currentColor;stroke-width:2"/><circle cx="12" cy="12" r="3" style="fill:currentColor"/><path id="eyeSlash" d="M4 4l16 16" style="stroke:currentColor;stroke-width:2.4;stroke-linecap:round"/></svg><span id="hideLbl">Hide the 3rd form</span></button>
+  </div>
+  <div class="tbl" id="irrTbl"><table id="irr"></table></div>
+  <div class="quick" data-answer="2">
+    <p class="q">Quick check: Which sentence is correct?</p>
+    <div class="opts"><button type="button">Tom have lost his key.</button><button type="button">Tom has losed his key.</button><button type="button">Tom has lost his key.</button></div>
+    <p class="fb" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- STEP 3 -->
+<section class="card" data-step="When?" hidden>
+  <div><div class="eyebrow">Step 3</div><h2>When do you use it?</h2></div>
+  <div class="uses">
+    <div class="use"><h3>1. Result now</h3><p>Something happened. You can see the result now.</p><p class="eg">I <span class="pp">have lost</span> my phone. (I can’t call you now.)</p></div>
+    <div class="use"><h3>2. Experiences</h3><p>Things you have done in your life (or never done) up to now.</p><p class="eg"><span class="pp">Have</span> you ever <span class="pp">been</span> to London? – No, I <span class="pp">have</span> never <span class="pp">been</span> there.</p></div>
+    <div class="use"><h3>3. Just, already, yet</h3><p>Something happened a short time ago, or not up to now.</p><p class="eg">The bus <span class="pp">has</span> just <span class="pp">left</span>. <span class="pp">Have</span> you <span class="pp">finished</span> yet?</p></div>
+    <div class="use"><h3>4. Since and for</h3><p>Something started in the past and is still going on now.</p><p class="eg">We <span class="pp">have lived</span> in Schwerin since 2020 / for six years.</p></div>
+  </div>
+  <div class="quick" data-answer="0">
+    <p class="q">Quick check: “I’ve broken my arm, so I can’t play football.” Which use is it?</p>
+    <div class="opts"><button type="button">Result now</button><button type="button">Experience</button><button type="button">Since and for</button></div>
+    <p class="fb" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- STEP 4 -->
+<section class="card" data-step="Signal words" hidden>
+  <div><div class="eyebrow">Step 4</div><h2>Signal words</h2></div>
+  <p>These words often go with the present perfect:</p>
+  <div class="chips"><span>just</span><span>already</span><span>yet</span><span>ever</span><span>never</span><span>so far</span><span>since</span><span>for</span></div>
+  <div class="tbl"><table>
+    <tr><th>Word</th><th>Where?</th><th>Example</th></tr>
+    <tr><td>just, already, ever, never</td><td>between <i>have/has</i> and the 3rd form</td><td>She has <b>already</b> packed.</td></tr>
+    <tr><td>yet</td><td>at the end, in questions and negatives</td><td>Have you packed <b>yet</b>? I haven’t packed <b>yet</b>.</td></tr>
+    <tr><td>since</td><td>a point in time</td><td><b>since</b> Monday, <b>since</b> 2020, <b>since</b> 8 o’clock</td></tr>
+    <tr><td>for</td><td>a period of time</td><td><b>for</b> two days, <b>for</b> a year, <b>for</b> ages</td></tr>
+  </table></div>
+  <div class="quick" data-answer="2">
+    <p class="q">Quick check: “We have been friends ___ five years.”</p>
+    <div class="opts"><button type="button">since</button><button type="button">yet</button><button type="button">for</button></div>
+    <p class="fb" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- STEP 5 -->
+<section class="card" data-step="Or simple past?" hidden>
+  <div><div class="eyebrow">Step 5</div><h2>Present perfect or simple past?</h2></div>
+  <p>Do you say <b>when</b> it happened, with a finished time? Then use the <span class="sp">simple past</span>.</p>
+  <div class="chips past"><span>yesterday</span><span>last week</span><span>two days ago</span><span>in 2019</span><span>when I was six</span></div>
+  <div class="cols">
+    <div class="box"><h3 style="color:var(--pp)">Present perfect</h3><p>No time given. The result or experience matters now.</p><p class="eg"><i>I <span class="pp">have lost</span> my key.</i></p></div>
+    <div class="box"><h3 style="color:var(--past)">Simple past</h3><p>A finished time in the past.</p><p class="eg"><i>I <span class="sp">lost</span> my key yesterday.</i></p></div>
+  </div>
+  <p class="muted">Careful: Never use the present perfect with <i>yesterday, last …, … ago</i> or <i>in 2019</i>. “I have lost my key yesterday” is wrong.</p>
+  <div class="quick" data-answer="1">
+    <p class="q">Quick check: Which sentence is correct?</p>
+    <div class="opts"><button type="button">We have visited Grandma last weekend.</button><button type="button">We visited Grandma last weekend.</button></div>
+    <p class="fb" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- STEP 6 -->
+<section class="card" data-step="Practice" hidden>
+  <div style="display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap">
+    <div><div class="eyebrow">Step 6</div><h2>Practice</h2></div>
+    <div class="stars" aria-live="polite">Your stars:
+      <svg class="star" id="star1" viewBox="0 0 24 24" aria-label="Star 1"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></svg>
+      <svg class="star" id="star2" viewBox="0 0 24 24" aria-label="Star 2"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></svg>
+      <svg class="star" id="star3" viewBox="0 0 24 24" aria-label="Star 3"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></svg>
+      <span id="starText">0 / 3</span></div>
+  </div>
+
+  <div class="ex e1" id="ex1">
+    <div class="exhead"><div class="eyebrow">Exercise 1</div><h3>The 3rd form</h3></div>
+    <div class="exbody">
+      <p><b>Write the past participle (3rd form).</b></p>
+      <div class="grid" id="partGrid"></div>
+      <div class="bar" data-ex="1"><button class="b b-check" type="button">Check</button><button class="b b-sol" type="button">Show answers</button><button class="b b-reset" type="button">Start again</button><span class="score" aria-live="polite"></span></div>
+    </div>
+  </div>
+
+  <div class="ex e2" id="ex2">
+    <div class="exhead"><div class="eyebrow">Exercise 2</div><h3>Maya’s first week in Glasgow</h3></div>
+    <div class="exbody">
+      <p><b>Put the verbs in the present perfect. Use <i>have</i> or <i>has</i>.</b></p>
+      <div class="sent" id="gapSent"></div>
+      <div class="bar" data-ex="2"><button class="b b-check" type="button">Check</button><button class="b b-sol" type="button">Show answers</button><button class="b b-reset" type="button">Start again</button><span class="score" aria-live="polite"></span></div>
+    </div>
+  </div>
+
+  <div class="ex e3" id="ex3">
+    <div class="exhead"><div class="eyebrow">Exercise 3</div><h3>Present perfect or simple past?</h3></div>
+    <div class="exbody">
+      <p><b>Choose the right form. Look for signal words.</b></p>
+      <div class="sent" id="choiceSent"></div>
+      <div class="bar" data-ex="3"><button class="b b-check" type="button">Check</button><button class="b b-sol" type="button">Show answers</button><button class="b b-reset" type="button">Start again</button><span class="score" aria-live="polite"></span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="pager"><button type="button" id="prev">← Back</button><button type="button" class="next" id="next">Next step →</button></div>
+
+<footer>Herr Fiedler · Sportgymnasium Schwerin<br>erstellt mit KI (Claude)</footer>
+</div>
+
+<script>
+/* ---------- stepper ---------- */
+const cards=[...document.querySelectorAll("#main > section.card")];
+const nav=document.getElementById("steps");let cur=0;const visited=new Set([0]);
+cards.forEach((c,i)=>nav.insertAdjacentHTML("beforeend",`<button type="button" data-i="${i}"><span class="n">${i+1}</span>${c.dataset.step}</button>`));
+function show(i){cur=i;visited.add(i);cards.forEach((c,k)=>c.hidden=k!==i);
+  nav.querySelectorAll("button").forEach((b,k)=>{b.toggleAttribute("aria-current",k===i);if(k===i)b.setAttribute("aria-current","step");b.classList.toggle("done",visited.has(k)&&k!==i)});
+  document.getElementById("prog").style.width=((i+1)/cards.length*100)+"%";
+  document.getElementById("prev").disabled=i===0;const nx=document.getElementById("next");nx.disabled=i===cards.length-1;
+  nx.textContent=i===cards.length-2?"Go to practice →":"Next step →"}
+nav.addEventListener("click",e=>{const b=e.target.closest("button");if(b){show(+b.dataset.i);nav.scrollIntoView({block:"nearest"})}});
+document.getElementById("prev").onclick=()=>{show(cur-1);nav.scrollIntoView({block:"start",behavior:"smooth"})};
+document.getElementById("next").onclick=()=>{show(cur+1);nav.scrollIntoView({block:"start",behavior:"smooth"})};
+show(0);
+
+/* ---------- quick checks ---------- */
+document.querySelectorAll(".quick").forEach(q=>{const ans=+q.dataset.answer,fb=q.querySelector(".fb");
+  q.querySelectorAll(".opts button").forEach((b,i)=>b.onclick=()=>{q.querySelectorAll(".opts button").forEach(x=>x.classList.remove("ok","bad"));
+    if(i===ans){b.classList.add("ok");fb.textContent="Right! Go on to the next step."}else{b.classList.add("bad");fb.textContent="Not quite. Read the step again and try once more."}})});
+
+/* ---------- irregular verbs ---------- */
+const IRR=[["be","was / were","been"],["go","went","gone"],["do","did","done"],["have","had","had"],["see","saw","seen"],["eat","ate","eaten"],["write","wrote","written"],["drive","drove","driven"],["sing","sang","sung"],["break","broke","broken"],["take","took","taken"],["lose","lost","lost"],["find","found","found"],["buy","bought","bought"],["meet","met","met"],["forget","forgot","forgotten"]];
+document.getElementById("irr").innerHTML="<tr><th>Infinitive</th><th>Simple past</th><th>3rd form</th></tr>"+IRR.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td tabindex="0">${r[2]}</td></tr>`).join("");
+document.getElementById("hideCol").onclick=e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";
+  b.setAttribute("aria-pressed",on);document.getElementById("irrTbl").classList.toggle("hidecol",on);
+  document.getElementById("hideLbl").textContent=on?"Show the 3rd form again":"Hide the 3rd form";
+  document.getElementById("eyeSlash").style.display=on?"none":"";
+  document.querySelectorAll("#irr td.peek").forEach(td=>td.classList.remove("peek"))};
+document.getElementById("irr").addEventListener("click",e=>{const td=e.target.closest("td");if(td&&td.cellIndex===2)td.classList.toggle("peek")});
+
+/* ---------- answer checking ---------- */
+const norm=s=>(" "+s.toLowerCase().replace(/[’`]/g,"'")+" ")
+  .replace(/n't /g," not ").replace(/'ve /g," have ").replace(/'s /g," has ")
+  .replace(/[.!?,]/g," ").replace(/\s+/g," ").trim();
+const accepts=(v,list)=>list.some(a=>norm(a)===norm(v));
+function mark(el,ok){el.classList.remove("ok","bad");el.classList.add(ok?"ok":"bad")}
+function clearSec(sec){sec.querySelectorAll(".sol").forEach(s=>s.remove());sec.querySelectorAll(".ok,.bad").forEach(e=>e.classList.remove("ok","bad"))}
+function addSol(el,t){const s=document.createElement("span");s.className="sol";s.textContent="✓ "+t;el.after(s)}
+
+/* Ex 1 */
+const PART=[["drive","driven"],["sing","sung"],["break","broken"],["lose","lost"],["take","taken"],["move","moved"],["hug","hugged"],["try","tried"],["write","written"],["feel","felt"]];
+document.getElementById("partGrid").innerHTML=PART.map(([v],i)=>`<label for="p-${i}"><b>${v}</b><input type="text" id="p-${i}" autocomplete="off" spellcheck="false"></label>`).join("");
+
+/* Ex 2: each gap = [id, accepted answers] */
+const G2=[
+ {t:"Maya <G0> (move) to Glasgow.",a:[["has moved"]]},
+ {t:"We <G0> (not / unpack) all our boxes yet.",a:[["have not unpacked"]]},
+ {t:"<G0> you ever <G1> (be) to Scotland?",a:[["have"],["been"]]},
+ {t:"Oh no! I <G0> (lose) my new phone.",a:[["have lost"]]},
+ {t:"Dad’s old car <G0> (break down) again.",a:[["has broken down"]]},
+ {t:"My brother <G0> just <G1> (eat) the last pancake.",a:[["has"],["eaten"]]},
+ {t:"My new friends <G0> never <G1> (see) the sea.",a:[["have"],["seen"]]},
+];
+document.getElementById("gapSent").innerHTML=G2.map((s,i)=>`<p><span class="no">${i+1}</span>${s.t.replace(/<G(\d)>/g,(_,k)=>`<input type="text" id="g-${i}-${k}" class="${s.a[k][0].includes(" ")?"w":""}" aria-label="Sentence ${i+1}, gap ${+k+1}" autocomplete="off" spellcheck="false">`)}</p>`).join("");
+
+/* Ex 3 */
+const C3=[
+ ["Yesterday we <S> to the cinema.",["went","have gone"]],
+ ["I <S> my homework yet.",["haven’t finished","didn’t finish"]],
+ ["Tom <S> his leg last week.",["broke","has broken"]],
+ ["<S> your keys yet?",["Have you found","Did you find"]],
+ ["Look! Somebody <S> the window.",["has opened","opened"]],
+ ["We <S> in Schwerin since 2019.",["have lived","lived"]],
+ ["Two days ago, Maya <S> goodbye to her old friends.",["said","has said"]],
+ ["She <S> three new friends in Glasgow so far.",["has made","made"]],
+];
+const ORDER=[0,1,1,0,1,1,0,0]; /* shows options in a mixed order: 0 = correct first */
+document.getElementById("choiceSent").innerHTML=C3.map(([t,o],i)=>{const opts=ORDER[i]?[o[1],o[0]]:o;
+  return `<p><span class="no">${i+1}</span>${t.replace("<S>",`<select id="c-${i}" aria-label="Sentence ${i+1}"><option value="">choose</option>${opts.map(x=>`<option value="${x}">${x}</option>`).join("")}</select>`)}</p>`}).join("");
+
+const EX={
+ 1:{check(){let r=0;PART.forEach(([,a],i)=>{const el=document.getElementById("p-"+i);const ok=accepts(el.value,[a]);if(ok)r++;mark(el,ok)});return[r,PART.length]},
+    sol(){PART.forEach(([,a],i)=>{const el=document.getElementById("p-"+i);if(accepts(el.value,[a]))mark(el,true);else addSol(el,a)})}},
+ 2:{check(){let r=0,t=0;G2.forEach((s,i)=>s.a.forEach((a,k)=>{t++;const el=document.getElementById(`g-${i}-${k}`);const ok=accepts(el.value,a);if(ok)r++;mark(el,ok)}));return[r,t]},
+    sol(){G2.forEach((s,i)=>s.a.forEach((a,k)=>{const el=document.getElementById(`g-${i}-${k}`);if(accepts(el.value,a))mark(el,true);else addSol(el,a[0].replace("have not","haven’t"))}))}},
+ 3:{check(){let r=0;C3.forEach(([,o],i)=>{const el=document.getElementById("c-"+i);const ok=el.value===o[0];if(ok)r++;mark(el,ok)});return[r,C3.length]},
+    sol(){C3.forEach(([,o],i)=>{const el=document.getElementById("c-"+i);el.value=o[0];mark(el,true)})}}
+};
+const peeked={1:false,2:false,3:false},earned={1:false,2:false,3:false};
+function stars(){let n=0;[1,2,3].forEach(k=>{document.getElementById("star"+k).classList.toggle("on",earned[k]);if(earned[k])n++});document.getElementById("starText").textContent=n+" / 3"}
+document.querySelectorAll(".bar").forEach(bar=>{const n=bar.dataset.ex,sec=bar.closest(".ex"),sc=bar.querySelector(".score");
+  bar.querySelector(".b-check").onclick=()=>{clearSec(sec);const[r,t]=EX[n].check();
+    if(r===t){if(!peeked[n]){earned[n]=true;stars()}sc.innerHTML=`<mark>${r} / ${t}</mark> ${peeked[n]?"All correct! Start again without the answers to win the star.":"Perfect – you got a star!"}`}
+    else sc.innerHTML=`<mark>${r} / ${t}</mark> correct. Look at the red ones again.`};
+  bar.querySelector(".b-sol").onclick=()=>{clearSec(sec);EX[n].sol();peeked[n]=true;sc.textContent="Here are the answers. Read them, then press Start again and try it yourself."};
+  bar.querySelector(".b-reset").onclick=()=>{clearSec(sec);sec.querySelectorAll("input").forEach(i=>i.value="");sec.querySelectorAll("select").forEach(s=>s.value="");peeked[n]=false;sc.textContent=""};
+});
+</script>
+
+</body></html>
