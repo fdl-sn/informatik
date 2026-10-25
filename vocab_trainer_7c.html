@@ -1,0 +1,333 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Vocab Trainer S. 16–20</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: playful single column; a star tracker on top, then three colour-coded exercise "cards" with their own illustration */
+:root{
+  --bg:#eef4ff; --paper:#ffffff; --ink:#1b2333; --muted:#566178; --line:#d4dcec;
+  --accent:#2347b8; --accent-soft:#dfe7ff; --mark:#ffd84d;
+  --c1:#0e8f7e; --c1-soft:#d8f4ef; --c2:#e0702b; --c2-soft:#ffe9da; --c3:#7a4fd6; --c3-soft:#ece4ff;
+  --k0:#2a8bd8; --k1:#e0702b; --k2:#d94a8a; --k3:#5a8f1c;
+  --ok:#1f7a4a; --ok-soft:#dff3e7; --bad:#b3261e; --bad-soft:#fbe3e1;
+  --skin:#f2c9a5; --hair:#5a3a22; --wood:#c8955a; --sky:#bfe0ff;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10141f; --paper:#1a2030; --ink:#e9edf5; --muted:#a4adbf; --line:#2f3852;
+  --accent:#93abff; --accent-soft:#25305a; --mark:#8a6f0e;
+  --c1:#4fd1bd; --c1-soft:#143a35; --c2:#ff9d5c; --c2-soft:#3d2614; --c3:#b49bff; --c3-soft:#2c2350;
+  --k0:#6ab8ff; --k1:#ff9d5c; --k2:#ff86bb; --k3:#9fd35a;
+  --ok:#6fd39c; --ok-soft:#173a29; --bad:#ff9a92; --bad-soft:#47201d;
+  --skin:#e0b48e; --hair:#3d2817; --wood:#a9773f; --sky:#27416a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141f; --paper:#1a2030; --ink:#e9edf5; --muted:#a4adbf; --line:#2f3852;
+  --accent:#93abff; --accent-soft:#25305a; --mark:#8a6f0e;
+  --c1:#4fd1bd; --c1-soft:#143a35; --c2:#ff9d5c; --c2-soft:#3d2614; --c3:#b49bff; --c3-soft:#2c2350;
+  --k0:#6ab8ff; --k1:#ff9d5c; --k2:#ff86bb; --k3:#9fd35a;
+  --ok:#6fd39c; --ok-soft:#173a29; --bad:#ff9a92; --bad-soft:#47201d;
+  --skin:#e0b48e; --hair:#3d2817; --wood:#a9773f; --sky:#27416a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px;
+  background-image:radial-gradient(var(--line) 1.2px,transparent 1.2px);background-size:22px 22px}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2rem,6vw,2.9rem);font-weight:800}
+h1 .hl{background:linear-gradient(transparent 58%,var(--mark) 58%);padding:0 4px}
+h2{font-size:1.55rem;font-weight:800}
+.eyebrow{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:18px;align-items:center;background:var(--paper);border:2px solid var(--ink);border-radius:18px;padding:22px clamp(16px,4vw,28px);box-shadow:6px 6px 0 var(--ink)}
+.hero p{margin:.5rem 0 0;color:var(--muted);max-width:56ch}
+.hero > svg{width:100%;height:auto}
+@media (max-width:560px){.hero{grid-template-columns:1fr}.hero > svg{max-width:170px;justify-self:center;order:-1}}
+
+/* star tracker */
+.stars{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:14px}
+.stars .lbl{font-weight:700}
+.star{width:22px;height:22px;flex:none}
+.star path{fill:var(--line);stroke:var(--muted);stroke-width:1.5;transition:fill .3s}
+.star.on path{fill:var(--mark);stroke:var(--ink)}
+@media (prefers-reduced-motion:no-preference){.star.on{animation:pop .5s ease}}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+details.words{background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:12px 16px}
+details.words summary{cursor:pointer;font-weight:700}
+.wl{overflow-x:auto;margin-top:10px}
+.wl table{border-collapse:collapse;width:100%;font-size:.95rem}
+.wl td{padding:4px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.wl td:first-child{font-weight:700;white-space:nowrap}
+
+/* exercise cards */
+section.ex{--c:var(--c1);--cs:var(--c1-soft);background:var(--paper);border:2px solid var(--ink);border-radius:18px;overflow:hidden;box-shadow:6px 6px 0 var(--c)}
+#ex2{--c:var(--c2);--cs:var(--c2-soft)} #ex3{--c:var(--c3);--cs:var(--c3-soft)}
+.exhead{background:var(--cs);border-bottom:2px solid var(--ink);display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px;align-items:center;padding:16px clamp(16px,4vw,26px)}
+.exhead .eyebrow{color:var(--c)}
+.exhead p{margin:.3rem 0 0;color:var(--muted);font-size:.95rem}
+.exhead svg{width:100%;height:auto}
+@media (max-width:520px){.exhead{grid-template-columns:minmax(0,1fr) 92px}}
+.exbody{padding:20px clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:16px}
+.task{margin:0;font-weight:700}
+.task .tag{display:inline-block;background:var(--c);color:var(--paper);border-radius:6px;padding:0 8px;margin-right:6px;font-family:var(--display)}
+
+/* ex1 */
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.9rem;font-weight:700;border:1.5px solid var(--line);border-radius:999px;padding:2px 10px}
+.legend i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.grid{display:grid;gap:8px}
+.sortgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr))}
+.row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:10px;align-items:center;padding:7px 10px;border-radius:10px;border:1.5px solid var(--line);border-left:7px solid var(--line)}
+.row[data-cat="0"]{border-left-color:var(--k0)} .row[data-cat="1"]{border-left-color:var(--k1)}
+.row[data-cat="2"]{border-left-color:var(--k2)} .row[data-cat="3"]{border-left-color:var(--k3)}
+.defgrid .row{grid-template-columns:minmax(0,.7fr) minmax(0,1.6fr)}
+@media (max-width:520px){.row,.defgrid .row{grid-template-columns:1fr}}
+.row .w{font-weight:700}
+select,input[type=text]{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;min-width:0;width:100%}
+select:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opp{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px}
+.opp label{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1.5px solid var(--line);border-radius:10px}
+.opp label b{white-space:nowrap}
+
+/* ex3 */
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border:2px dashed var(--c);border-radius:12px;background:var(--cs)}
+.bank span{background:var(--paper);border:1.5px solid var(--c);border-radius:999px;padding:2px 12px;font-size:.95rem;font-weight:700}
+.story p{margin:0 0 1em;line-height:2.15;max-width:68ch}
+.story input{width:11.5em;display:inline-block;padding:2px 6px}
+.gapno{font-size:.8rem;color:var(--c);font-weight:700;margin-right:3px}
+
+.ok{border-color:var(--ok)!important;background:var(--ok-soft)!important}
+.bad{border-color:var(--bad)!important;background:var(--bad-soft)!important}
+.sol{display:inline;margin-left:4px;font-size:.88rem;color:var(--ok);font-weight:700}
+
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:2px dashed var(--line);padding-top:14px}
+button{font:inherit;font-weight:700;border-radius:10px;padding:8px 16px;cursor:pointer;border:2px solid var(--ink)}
+.b-check{background:var(--c);color:var(--paper);box-shadow:3px 3px 0 var(--ink)}
+.b-check:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.b-sol{background:var(--paper);color:var(--ink)}
+.b-reset{background:transparent;color:var(--muted);border-color:var(--line)}
+.score{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.score mark{background:var(--mark);color:var(--ink);padding:0 6px;border-radius:4px}
+@media (max-width:520px){.score{margin-left:0;width:100%}}
+
+footer{color:var(--muted);font-size:.88rem;text-align:center;line-height:1.7}
+@media (prefers-reduced-motion:no-preference){.row,.opp label,input,select{transition:background .2s,border-color .2s}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:20}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">English · Klasse 7 · Vocabulary p. 16–20</div>
+    <h1><span class="hl">Vocab</span> Trainer</h1>
+    <p>Three exercises, 56 new words. Click <b>Check</b> to see what is right. Stuck? Click <b>Show answers</b>. Get everything right and win a star!</p>
+    <div class="stars" aria-live="polite">
+      <span class="lbl">Your stars:</span>
+      <svg class="star" id="star1" viewBox="0 0 24 24" aria-label="Star for exercise 1"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></svg>
+      <svg class="star" id="star2" viewBox="0 0 24 24" aria-label="Star for exercise 2"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></svg>
+      <svg class="star" id="star3" viewBox="0 0 24 24" aria-label="Star for exercise 3"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></svg>
+      <span id="starText">0 / 3</span>
+    </div>
+  </div>
+  <!-- girl with headphones and speech bubble -->
+  <svg viewBox="0 0 200 200" role="img" aria-label="Illustration: a girl says Hello!">
+    <circle cx="100" cy="112" r="80" style="fill:var(--sky)"/>
+    <path d="M40 200c4-40 30-58 60-58s56 18 60 58z" style="fill:var(--c3)"/>
+    <rect x="88" y="120" width="24" height="26" rx="8" style="fill:var(--skin)"/>
+    <ellipse cx="100" cy="98" rx="36" ry="40" style="fill:var(--skin)"/>
+    <path d="M62 98c-4-34 18-52 40-52s44 16 38 52c-6-14-14-24-38-26-22 2-34 12-40 26z" style="fill:var(--hair)"/>
+    <path d="M60 96c0-30 18-44 40-44s40 14 40 44" style="fill:none;stroke:var(--ink);stroke-width:6;stroke-linecap:round"/>
+    <rect x="52" y="88" width="14" height="24" rx="6" style="fill:var(--c2)"/>
+    <rect x="134" y="88" width="14" height="24" rx="6" style="fill:var(--c2)"/>
+    <circle cx="86" cy="100" r="4" style="fill:var(--ink)"/><circle cx="114" cy="100" r="4" style="fill:var(--ink)"/>
+    <path d="M88 116q12 10 24 0" style="fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round"/>
+    <g transform="translate(118 12)">
+      <path d="M4 0h64a8 8 0 0 1 8 8v26a8 8 0 0 1-8 8H30l-14 12 2-12H4a8 8 0 0 1-8-8V8a8 8 0 0 1 8-8z" style="fill:var(--paper);stroke:var(--ink);stroke-width:2.5"/>
+      <text x="36" y="27" text-anchor="middle" style="font:800 16px var(--display);fill:var(--ink)">Hello!</text>
+    </g>
+  </svg>
+</header>
+
+<details class="words" id="wordlist">
+  <summary>Word list (56 words): look up a word here</summary>
+  <div class="wl"><table id="wlt"></table></div>
+</details>
+
+<section class="ex" id="ex1">
+  <div class="exhead">
+    <div><div class="eyebrow">Exercise 1</div><h2>Sort it out!</h2><p>Places, things, feelings and little helper words</p></div>
+    <!-- four sorting boxes -->
+    <svg viewBox="0 0 150 100" role="img" aria-label="Illustration: four coloured boxes">
+      <g style="stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round">
+        <path d="M6 52h30v40H6z" style="fill:var(--k0)"/><path d="M40 52h30v40H40z" style="fill:var(--k1)"/>
+        <path d="M74 52h30v40H74z" style="fill:var(--k2)"/><path d="M108 52h30v40h-30z" style="fill:var(--k3)"/>
+      </g>
+      <g style="fill:var(--paper);stroke:var(--ink);stroke-width:2">
+        <rect x="14" y="18" width="34" height="16" rx="4" transform="rotate(-12 31 26)"/>
+        <rect x="62" y="6" width="34" height="16" rx="4" transform="rotate(8 79 14)"/>
+        <rect x="100" y="24" width="34" height="16" rx="4" transform="rotate(-6 117 32)"/>
+      </g>
+      <g style="fill:var(--ink);font:800 9px var(--body)" text-anchor="middle">
+        <text x="31" y="29" transform="rotate(-12 31 26)">town</text><text x="79" y="17" transform="rotate(8 79 14)">mood</text><text x="117" y="35" transform="rotate(-6 117 32)">still</text>
+      </g>
+    </svg>
+  </div>
+  <div class="exbody">
+    <p class="task"><span class="tag">a</span>Which box does each word go into? Choose a box for every word.</p>
+    <div class="legend">
+      <span><i style="background:var(--k0)"></i>Places</span><span><i style="background:var(--k1)"></i>Things, food and events</span>
+      <span><i style="background:var(--k2)"></i>Ideas and feelings</span><span><i style="background:var(--k3)"></i>Small helper words</span>
+    </div>
+    <div class="grid sortgrid" id="sortGrid"></div>
+    <p class="task"><span class="tag">b</span>Opposites: find the opposite of each word in the word list.</p>
+    <div class="opp" id="oppGrid"></div>
+    <div class="bar" data-ex="1">
+      <button class="b-check" type="button">Check</button>
+      <button class="b-sol" type="button">Show answers</button>
+      <button class="b-reset" type="button">Start again</button>
+      <span class="score" aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+
+<section class="ex" id="ex2">
+  <div class="exhead">
+    <div><div class="eyebrow">Exercise 2</div><h2>What does it mean?</h2><p>Find the right explanation in English</p></div>
+    <!-- magnifying glass over a word card -->
+    <svg viewBox="0 0 150 100" role="img" aria-label="Illustration: a magnifying glass over a word card">
+      <rect x="8" y="22" width="96" height="58" rx="8" style="fill:var(--paper);stroke:var(--ink);stroke-width:2.5"/>
+      <rect x="20" y="36" width="56" height="8" rx="4" style="fill:var(--c2)"/>
+      <rect x="20" y="52" width="72" height="6" rx="3" style="fill:var(--line)"/>
+      <rect x="20" y="64" width="50" height="6" rx="3" style="fill:var(--line)"/>
+      <circle cx="96" cy="44" r="24" style="fill:var(--sky);fill-opacity:.55;stroke:var(--ink);stroke-width:5"/>
+      <path d="M113 61l24 24" style="stroke:var(--ink);stroke-width:9;stroke-linecap:round"/>
+      <text x="96" y="50" text-anchor="middle" style="font:800 16px var(--display);fill:var(--ink)">?</text>
+    </svg>
+  </div>
+  <div class="exbody">
+    <p class="task">Choose the right explanation for each word.</p>
+    <div class="grid defgrid" id="defGrid"></div>
+    <div class="bar" data-ex="2">
+      <button class="b-check" type="button">Check</button>
+      <button class="b-sol" type="button">Show answers</button>
+      <button class="b-reset" type="button">Start again</button>
+      <span class="score" aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+
+<section class="ex story" id="ex3">
+  <div class="exhead">
+    <div><div class="eyebrow">Exercise 3</div><h2>Moving day</h2><p>Gillian and her family move to Glasgow</p></div>
+    <!-- moving van with boxes -->
+    <svg viewBox="0 -8 150 108" role="img" aria-label="Illustration: a moving van full of boxes">
+      <g style="stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round">
+        <rect x="6" y="26" width="86" height="52" rx="5" style="fill:var(--c3)"/>
+        <path d="M92 42h28l18 18v18H92z" style="fill:var(--paper)"/>
+        <path d="M100 48h17l11 11h-28z" style="fill:var(--sky)"/>
+        <rect x="16" y="8" width="24" height="20" style="fill:var(--wood)"/>
+        <rect x="42" y="12" width="20" height="16" style="fill:var(--wood)"/>
+        <rect x="26" y="-4" width="18" height="13" style="fill:var(--wood)"/>
+        <circle cx="30" cy="80" r="11" style="fill:var(--ink)"/><circle cx="114" cy="80" r="11" style="fill:var(--ink)"/>
+      </g>
+      <circle cx="30" cy="80" r="4" style="fill:var(--line)"/><circle cx="114" cy="80" r="4" style="fill:var(--line)"/>
+      <text x="49" y="58" text-anchor="middle" style="font:800 13px var(--display);fill:var(--paper)">MOVE IT</text>
+    </svg>
+  </div>
+  <div class="exbody">
+    <p class="task">Complete the story with words from the box. Use the right form of the verb.</p>
+    <div class="bank" id="bank3"></div>
+    <div id="storyText"></div>
+    <div class="bar" data-ex="3">
+      <button class="b-check" type="button">Check</button>
+      <button class="b-sol" type="button">Show answers</button>
+      <button class="b-reset" type="button">Start again</button>
+      <span class="score" aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+
+<footer>Herr Fiedler · Sportgymnasium Schwerin<br>erstellt mit KI (Claude)</footer>
+</div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+const WORDS=[["reaction (to)","Reaktion (auf)"],["which","welche(r, s)"],["while","während, als"],["rather","ziemlich, recht"],["wedding","Hochzeit"],["pancake","Pfannkuchen, Omelette"],["to turn on","einschalten, aufdrehen, anmachen"],["to sing along, sang along, sung along","mitsingen"],["however","jedoch, aber"],["smile","Lächeln"],["quite","ziemlich, ganz"],["town","Stadt"],["to slam the door shut","die Tür zuschlagen"],["coffee","Kaffee"],["to take a deep breath","tief Luft holen"],["to hug","umarmen"],["kind","Art, Sorte"],["to expect","erwarten, rechnen"],["such","solch(er, es)"],["completely","völlig"],["helpless","hilflos, machtlos"],["to move","(sich) bewegen; (um)ziehen"],["to turn away","sich abwenden, wegrücken"],["still","(immer) noch"],["even if","selbst wenn"],["country","Land"],["UK (= the United Kingdom)","Vereinigtes Königreich"],["England","England"],["Scotland","Schottland"],["Northern Ireland","Nordirland"],["capital (city)","Hauptstadt"],["the other one","der/die/das andere"],["note","Notiz, Mitteilung"],["action","Handeln, Handlung, Tat"],["to travel","reisen"],["to drive, drove, driven","fahren"],["to pack","(ein)packen"],["simple","einfach"],["to feel like doing sth","Lust haben, etw. zu tun"],["to break down, broke down, broken down","stehen bleiben, versagen, zusammenbrechen"],["to belong","(dazu)gehören"],["lost","verlaufen, verloren"],["powerful","mächtig, stark, druckvoll"],["dramatic","dramatisch"],["optimistic","optimistisch"],["mood","Laune, Stimmung"],["patient","geduldig"],["empty","leer"],["goodbye","Abschied"],["to be missing","fehlen"],["flat","(Etagen-)Wohnung"],["to persuade","überreden, überzeugen"],["change","(Ver-)Änderung, Wechsel, Umstellung"],["point of view","Ansicht, Einstellung, Sicht"],["another","noch eine(r, s); ein(e) andere(r)"],["to go together","zusammengehören, passen"]];
+document.getElementById("wlt").innerHTML=WORDS.map(([e,d])=>`<tr><td>${e}</td><td>${d}</td></tr>`).join("");
+
+const norm=s=>s.toLowerCase().replace(/[’`]/g,"'").replace(/[.!?,]/g,"").replace(/\s+/g," ").trim().replace(/^to /,"");
+const accepts=(val,list)=>list.map(norm).includes(norm(val));
+
+const CATS=["Places","Things, food and events","Ideas and feelings","Small helper words"];
+const SORT=[["town",[0]],["however",[3]],["wedding",[1]],["reaction",[2]],["country",[0]],["while",[3]],["note",[1]],["Scotland",[0]],["even if",[3]],["action",[2]],["capital",[0]],["still",[3]],["smile",[1,2]],["flat",[0]],["which",[3]],["change",[2]],["England",[0]],["such",[3]],["pancake",[1]],["mood",[2]],["Northern Ireland",[0]],["rather",[3]],["coffee",[1]],["point of view",[2]],["UK",[0]],["quite",[3]],["completely",[3]]];
+const sortGrid=document.getElementById("sortGrid");
+SORT.forEach(([w],i)=>sortGrid.insertAdjacentHTML("beforeend",
+ `<div class="row"><span class="w">${w}</span><span><select id="s1-${i}" aria-label="Box for ${w}"><option value="">choose a box</option>${CATS.map((c,k)=>`<option value="${k}">${c}</option>`).join("")}</select></span></div>`));
+sortGrid.addEventListener("change",e=>{const r=e.target.closest(".row");if(e.target.value==="")r.removeAttribute("data-cat");else r.dataset.cat=e.target.value});
+
+const OPP=[["full",["empty"]],["difficult",["simple"]],["weak",["powerful"]],["hello",["goodbye"]],["to turn off",["turn on"]],["to unpack",["pack"]],["found",["lost"]],["impatient",["patient"]]];
+const oppGrid=document.getElementById("oppGrid");
+OPP.forEach(([w],i)=>oppGrid.insertAdjacentHTML("beforeend",
+ `<label for="o1-${i}"><b>${w} ↔</b><input type="text" id="o1-${i}" autocomplete="off" spellcheck="false"></label>`));
+
+const DEFS=["to put your arms around somebody","exciting, with lots of strong feelings and surprises","to stop working (for example a car or a machine)","to think that something will happen","not able to do anything to help yourself or other people","to look or sound good next to each other","to talk to somebody until they do what you want","not to be in the place where it should be","thinking that good things will happen","to go from one place to another, often far away","to move your face or body so that you don’t look at somebody","to be part of a group or a place and feel at home there"];
+const DEFW=[["helpless",4],["dramatic",1],["optimistic",8],["to persuade",6],["to belong",11],["to travel",9],["to expect",3],["to hug",0],["to be missing",7],["to go together",5],["to turn away",10],["to break down",2]];
+const defGrid=document.getElementById("defGrid");
+DEFW.forEach(([w],i)=>defGrid.insertAdjacentHTML("beforeend",
+ `<div class="row"><span class="w">${w}</span><span><select id="d2-${i}" aria-label="Meaning of ${w}"><option value="">choose</option>${DEFS.map((d,k)=>`<option value="${k}">${d}</option>`).join("")}</select></span></div>`));
+
+const BANK=["another","to drive","to feel like doing sth","kind","to move","to sing along","to slam the door shut","to take a deep breath","the other one"];
+document.getElementById("bank3").innerHTML=BANK.map(b=>`<span>${b}</span>`).join("");
+const GAPS=[["move"],["drive"],["feel like"],["kind"],["slams the door shut"],["takes a deep breath"],["the other one"],["another"],["sings along"]];
+const g=n=>`<span class="gapno">(${n})</span><input type="text" id="g3-${n-1}" aria-label="Gap ${n}" autocomplete="off" spellcheck="false">`;
+document.getElementById("storyText").innerHTML=
+`<p>Gillian’s family is going to ${g(1)} to a new flat in Glasgow. Her dad wants to ${g(2)} there because the train is too expensive. On the morning of moving day, Gillian doesn’t ${g(3)} talking to anybody. When her little brother asks, “What ${g(4)} of school is it?”, she gets angry. She runs into her room and ${g(5)}.</p>
+<p>After a few minutes, she ${g(6)} and goes back into the kitchen. Her brother has got two biscuits. He eats one and gives her ${g(7)}. “Can I have ${g(8)} one?” she asks with a smile. Later, in the car, Dad turns on the radio and everybody ${g(9)} to their favourite song. Maybe a new home isn’t so bad after all.</p>`;
+
+function mark(el,ok){el.classList.remove("ok","bad");el.classList.add(ok?"ok":"bad")}
+function clearSol(sec){sec.querySelectorAll(".sol").forEach(s=>s.remove());sec.querySelectorAll(".ok,.bad").forEach(e=>e.classList.remove("ok","bad"))}
+function addSol(el,text){const s=document.createElement("span");s.className="sol";s.textContent="✓ "+text;el.after(s)}
+function setCat(sel){const r=sel.closest(".row");if(sel.value==="")r.removeAttribute("data-cat");else r.dataset.cat=sel.value}
+
+const EX={
+ 1:{check(){let r=0,t=0;
+     SORT.forEach(([,ok],i)=>{const s=document.getElementById("s1-"+i);t++;const good=s.value!==""&&ok.includes(+s.value);if(good)r++;mark(s.closest(".row"),good)});
+     OPP.forEach(([,ok],i)=>{const inp=document.getElementById("o1-"+i);t++;const good=accepts(inp.value,ok);if(good)r++;mark(inp,good)});return[r,t]},
+    sol(){SORT.forEach(([,ok],i)=>{const s=document.getElementById("s1-"+i);if(!ok.includes(+s.value)||s.value==="")s.value=ok[0];setCat(s);mark(s.closest(".row"),true)});
+     OPP.forEach(([,ok],i)=>{const inp=document.getElementById("o1-"+i);if(!accepts(inp.value,ok))inp.value=ok[0];mark(inp,true)})}},
+ 2:{check(){let r=0;DEFW.forEach(([,k],i)=>{const s=document.getElementById("d2-"+i);const good=s.value!==""&&+s.value===k;if(good)r++;mark(s.closest(".row"),good)});return[r,DEFW.length]},
+    sol(){DEFW.forEach(([,k],i)=>{const s=document.getElementById("d2-"+i);s.value=k;mark(s.closest(".row"),true)})}},
+ 3:{check(){let r=0;GAPS.forEach((ok,i)=>{const inp=document.getElementById("g3-"+i);const good=accepts(inp.value,ok);if(good)r++;mark(inp,good)});return[r,GAPS.length]},
+    sol(){GAPS.forEach((ok,i)=>{const inp=document.getElementById("g3-"+i);if(!accepts(inp.value,ok))addSol(inp,ok[0]);else mark(inp,true)})}}
+};
+
+/* stars: earned only by a fully correct "Check" without having opened the answers */
+const peeked={1:false,2:false,3:false}, earned={1:false,2:false,3:false};
+function updateStars(){let n=0;[1,2,3].forEach(k=>{document.getElementById("star"+k).classList.toggle("on",earned[k]);if(earned[k])n++});document.getElementById("starText").textContent=n+" / 3"}
+
+const PRAISE=["All correct – well done!","Perfect! You got a star.","Brilliant – no mistakes!"];
+document.querySelectorAll(".bar").forEach(bar=>{
+  const n=bar.dataset.ex,sec=bar.closest("section"),score=bar.querySelector(".score");
+  bar.querySelector(".b-check").onclick=()=>{clearSol(sec);const[r,t]=EX[n].check();
+    if(r===t){score.innerHTML=`<mark>${r} / ${t}</mark> ${peeked[n]?"All correct! Now try it again without the answers to win the star.":PRAISE[n-1]}`;
+      if(!peeked[n]&&!earned[n]){earned[n]=true;updateStars();confetti()}}
+    else score.innerHTML=`<mark>${r} / ${t}</mark> correct. Look at the red ones again.`};
+  bar.querySelector(".b-sol").onclick=()=>{clearSol(sec);EX[n].sol();peeked[n]=true;score.textContent="Here are the answers. Read them carefully, then press Start again and try it yourself."};
+  bar.querySelector(".b-reset").onclick=()=>{clearSol(sec);sec.querySelectorAll("input").forEach(i=>i.value="");sec.querySelectorAll("select").forEach(s=>{s.value="";const r=s.closest(".row");if(r)r.removeAttribute("data-cat")});peeked[n]=false;score.textContent=""};
+});
+
+/* small confetti burst, skipped for reduced motion */
+function confetti(){
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const c=document.getElementById("confetti"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+  const cs=getComputedStyle(document.documentElement),cols=["--c1","--c2","--c3","--mark","--k0","--k2"].map(v=>cs.getPropertyValue(v).trim());
+  const P=Array.from({length:120},()=>({x:innerWidth/2,y:innerHeight*.35,vx:(Math.random()-.5)*14,vy:Math.random()*-12-4,s:Math.random()*7+4,r:Math.random()*6,c:cols[Math.random()*cols.length|0]}));
+  let f=0;(function step(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+    if(++f<110)requestAnimationFrame(step);else x.clearRect(0,0,c.width,c.height)})();
+}
+</script>
+
+</body></html>
