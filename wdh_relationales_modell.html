@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vom ER-Modell zum relationalen Modell</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --text:#1d2330; --muted:#5b6475;
+    --accent:#1f6fb2; --accent-soft:#e3eef8; --ok:#1e7d45; --ok-soft:#e2f4e9;
+    --bad:#b3261e; --bad-soft:#fbe7e5; --border:#d9dee6; --pk:#1f6fb2; --fk:#a05a00;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14171c; --card:#1d2128; --text:#e6e9ee; --muted:#9aa3b2;
+      --accent:#6aaee8; --accent-soft:#1f3347; --ok:#5cc98a; --ok-soft:#183324;
+      --bad:#f08a80; --bad-soft:#3a1d1b; --border:#323844; --pk:#6aaee8; --fk:#e8a94f;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+  h1{font-size:1.6rem;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px}
+  section{background:var(--card);border:1px solid var(--border);border-radius:12px;
+          padding:18px 18px 14px;margin-bottom:18px}
+  h2{font-size:1.15rem;margin:0 0 10px}
+  h2 .tag{font-size:.8rem;font-weight:600;color:var(--accent);background:var(--accent-soft);
+          border-radius:999px;padding:2px 10px;margin-left:8px;vertical-align:middle}
+  .q{margin:14px 0;padding-top:10px;border-top:1px dashed var(--border)}
+  .q:first-of-type{border-top:none;padding-top:0}
+  .q p{margin:0 0 6px;font-weight:600}
+  label.opt{display:block;padding:6px 10px;border-radius:8px;cursor:pointer;margin:2px 0}
+  label.opt:hover{background:var(--accent-soft)}
+  label.opt input{margin-right:8px}
+  .fb{display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:.95rem}
+  .fb.ok{display:block;background:var(--ok-soft);color:var(--ok)}
+  .fb.bad{display:block;background:var(--bad-soft);color:var(--bad)}
+  button{font:inherit;font-weight:600;border:none;border-radius:8px;padding:9px 16px;
+         background:var(--accent);color:#fff;cursor:pointer;margin-top:8px}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .result{font-weight:600;margin-left:10px}
+  .diagram{width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:10px;
+           padding:8px;background:var(--bg)}
+  .diagram svg{display:block;min-width:640px;width:100%;height:auto}
+  .story{color:var(--muted);font-size:.95rem;margin:10px 0 0}
+  .legend{font-size:.92rem;color:var(--muted);margin:6px 0 12px}
+  .pk{text-decoration:underline;color:var(--pk);font-weight:600}
+  .fk{color:var(--fk);font-weight:600}
+  .rel{margin:12px 0;padding:10px 12px;border:1px solid var(--border);border-radius:10px}
+  .rel h3{margin:0 0 8px;font-size:1rem}
+  .attr{display:flex;align-items:center;justify-content:space-between;gap:10px;
+        padding:5px 0;border-bottom:1px solid var(--border)}
+  .attr:last-child{border-bottom:none}
+  .attr{flex-wrap:wrap}
+  .attr .name{font-weight:600;min-width:110px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font:inherit;font-weight:500;font-size:.9rem;margin:0;padding:5px 10px;border-radius:999px;
+        border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+  .chip:hover{border-color:var(--accent)}
+  .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .attr.ok{background:var(--ok-soft)}
+  .attr.bad{background:var(--bad-soft)}
+  .attr.ok,.attr.bad{border-radius:6px;padding-left:6px;padding-right:6px}
+  .locked{color:var(--muted);font-style:italic}
+  .hidden{display:none}
+  code{background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+  #total{font-size:1.1rem}
+  svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+</style>
+</head>
+<body>
+<main>
+  <h1>Vom ER-Modell zum relationalen Modell</h1>
+  <p class="sub">Wiederholung · Bearbeitungszeit ca. 10 Minuten · Arbeite die Teile der Reihe nach ab.</p>
+
+  <!-- TEIL 1 -->
+  <section id="teil1">
+    <h2>Teil 1: Die Überführungsregeln <span class="tag">ca. 2 min</span></h2>
+    <div class="qs"></div>
+    <button data-check="teil1">Prüfen</button><span class="result"></span>
+  </section>
+
+  <!-- TEIL 2 -->
+  <section id="teil2">
+    <h2>Teil 2: Ein ER-Modell analysieren <span class="tag">ca. 3 min</span></h2>
+    <div class="diagram">
+      <svg viewBox="0 0 820 260" role="img" aria-label="ER-Modell mit Trainer, Sportart und Schüler">
+        <style>
+          .ent{fill:var(--card);stroke:var(--text);stroke-width:1.5}
+          .dia{fill:var(--accent-soft);stroke:var(--text);stroke-width:1.5}
+          .att{fill:var(--card);stroke:var(--muted);stroke-width:1.2}
+          .ln{stroke:var(--text);stroke-width:1.3}
+          .t{fill:var(--text);font-size:14px;text-anchor:middle;dominant-baseline:middle}
+          .tb{font-weight:700;font-size:15px}
+          .card{fill:var(--accent);font-weight:700;font-size:15px;text-anchor:middle}
+        </style>
+        <!-- Linien Attribute -->
+        <line class="ln" x1="45" y1="68" x2="65" y2="110"/>
+        <line class="ln" x1="135" y1="68" x2="110" y2="110"/>
+        <line class="ln" x1="80" y1="197" x2="80" y2="154"/>
+        <line class="ln" x1="365" y1="68" x2="380" y2="110"/>
+        <line class="ln" x1="450" y1="68" x2="430" y2="110"/>
+        <line class="ln" x1="560" y1="197" x2="560" y2="162"/>
+        <line class="ln" x1="685" y1="68" x2="700" y2="110"/>
+        <line class="ln" x1="775" y1="68" x2="750" y2="110"/>
+        <line class="ln" x1="720" y1="197" x2="720" y2="154"/>
+        <!-- Linien Beziehungen -->
+        <line class="ln" x1="140" y1="132" x2="185" y2="132"/>
+        <line class="ln" x1="295" y1="132" x2="340" y2="132"/>
+        <line class="ln" x1="460" y1="132" x2="505" y2="132"/>
+        <line class="ln" x1="615" y1="132" x2="660" y2="132"/>
+        <!-- Entitätstypen -->
+        <rect class="ent" x="20" y="110" width="120" height="44"/>
+        <text class="t tb" x="80" y="132">Trainer</text>
+        <rect class="ent" x="340" y="110" width="120" height="44"/>
+        <text class="t tb" x="400" y="132">Sportart</text>
+        <rect class="ent" x="660" y="110" width="120" height="44"/>
+        <text class="t tb" x="720" y="132">Schüler</text>
+        <!-- Beziehungstypen -->
+        <polygon class="dia" points="185,132 240,102 295,132 240,162"/>
+        <text class="t" x="240" y="132">trainiert</text>
+        <polygon class="dia" points="505,132 560,102 615,132 560,162"/>
+        <text class="t" x="560" y="132">betreibt</text>
+        <!-- Kardinalitäten -->
+        <text class="card" x="155" y="122">n</text>
+        <text class="card" x="325" y="122">1</text>
+        <text class="card" x="475" y="122">m</text>
+        <text class="card" x="645" y="122">n</text>
+        <!-- Attribute -->
+        <ellipse class="att" cx="45" cy="50" rx="42" ry="18"/>
+        <text class="t" x="45" y="50" text-decoration="underline">TrainerNr</text>
+        <ellipse class="att" cx="135" cy="50" rx="34" ry="18"/>
+        <text class="t" x="135" y="50">Name</text>
+        <ellipse class="att" cx="80" cy="215" rx="48" ry="18"/>
+        <text class="t" x="80" y="215">Lizenzstufe</text>
+        <ellipse class="att" cx="365" cy="50" rx="46" ry="18"/>
+        <text class="t" x="365" y="50" text-decoration="underline">SportartID</text>
+        <ellipse class="att" cx="450" cy="50" rx="50" ry="18"/>
+        <text class="t" x="450" y="50">Bezeichnung</text>
+        <ellipse class="att" cx="560" cy="215" rx="30" ry="18"/>
+        <text class="t" x="560" y="215">seit</text>
+        <ellipse class="att" cx="685" cy="50" rx="46" ry="18"/>
+        <text class="t" x="685" y="50" text-decoration="underline">SchülerNr</text>
+        <ellipse class="att" cx="775" cy="50" rx="34" ry="18"/>
+        <text class="t" x="775" y="50">Name</text>
+        <ellipse class="att" cx="720" cy="215" rx="34" ry="18"/>
+        <text class="t" x="720" y="215">Klasse</text>
+      </svg>
+    </div>
+    <p class="story">Ein Trainer trainiert genau eine Sportart, eine Sportart kann von mehreren Trainern trainiert werden.
+      Eine Schülerin oder ein Schüler kann mehrere Sportarten betreiben, eine Sportart wird von vielen Schülerinnen und Schülern betrieben.
+      Das Attribut <code>seit</code> gibt an, seit wann jemand die Sportart betreibt.</p>
+    <div class="qs"></div>
+    <button data-check="teil2">Prüfen</button><span class="result"></span>
+  </section>
+
+  <!-- TEIL 3 -->
+  <section id="teil3">
+    <h2>Teil 3: Schlüssel kennzeichnen <span class="tag">ca. 3 min</span></h2>
+    <p class="locked" id="lock3">Dieser Teil wird freigeschaltet, sobald du Teil 2 geprüft hast.</p>
+    <div id="body3" class="hidden">
+      <p>So sieht das relationale Modell zum ER-Modell aus Teil 2 aus. Klicke für jedes Attribut an, welche Rolle es spielt.
+        Ein Attribut kann gleichzeitig Primär- und Fremdschlüssel sein – dann wählst du beide Felder.</p>
+      <p class="legend">Kennzeichnung im Modell: <span class="pk">Primärschlüssel</span> unterstrichen,
+        <span class="fk">↑Fremdschlüssel</span> mit Pfeil. Ein Attribut kann auch beides sein.</p>
+      <div id="rels"></div>
+      <button data-check="teil3">Prüfen</button><span class="result"></span>
+      <div class="fb" id="fb3"></div>
+    </div>
+  </section>
+
+  <!-- TEIL 4 -->
+  <section id="teil4">
+    <h2>Teil 4: Rückwärts denken <span class="tag">ca. 2 min</span></h2>
+    <p>Gegeben ist ein Ausschnitt eines relationalen Modells:</p>
+    <p style="line-height:1.9">
+      Raum(<span class="pk">RaumNr</span>, Etage)<br>
+      Kurs(<span class="pk">KursNr</span>, Titel, <span class="fk">↑RaumNr</span>)<br>
+      Teilnahme(<span class="pk fk">↑SchülerNr</span>, <span class="pk fk">↑KursNr</span>, Note)
+    </p>
+    <div class="qs"></div>
+    <button data-check="teil4">Prüfen</button><span class="result"></span>
+  </section>
+
+  <section>
+    <h2>Gesamtergebnis</h2>
+    <p id="total">Noch nichts geprüft.</p>
+    <button class="ghost" id="reset">Alles zurücksetzen</button>
+  </section>
+</main>
+
+<script>
+const MC = {
+  teil1: [
+    { q: "Zwischen zwei Entitätstypen besteht eine 1:n-Beziehung. Wie wird sie im relationalen Modell abgebildet?",
+      o: ["Der Primärschlüssel der 1-Seite wird als Fremdschlüssel in die Tabelle der n-Seite aufgenommen.",
+          "Der Primärschlüssel der n-Seite wird als Fremdschlüssel in die Tabelle der 1-Seite aufgenommen.",
+          "Es wird immer eine eigene Tabelle für die Beziehung angelegt."],
+      a: 0,
+      e: "Auf der n-Seite gehört zu jedem Datensatz genau ein Partner – dort passt der Fremdschlüssel hinein. Auf der 1-Seite bräuchte man dafür mehrere Werte in einem Feld." },
+    { q: "Wie wird eine n:m-Beziehung abgebildet?",
+      o: ["Fremdschlüssel in beiden beteiligten Tabellen.",
+          "Eine eigene Tabelle, die die Primärschlüssel beider Entitätstypen als Fremdschlüssel enthält.",
+          "Die beiden Tabellen werden zu einer zusammengelegt."],
+      a: 1,
+      e: "Für n:m braucht man eine zusätzliche Tabelle. Ihre Fremdschlüssel bilden zusammen meist den Primärschlüssel." },
+    { q: "Wie kann eine 1:1-Beziehung abgebildet werden?",
+      o: ["Nur über eine eigene Beziehungstabelle.",
+          "Der Primärschlüssel einer Tabelle wird als Fremdschlüssel in die andere Tabelle aufgenommen (alternativ: Zusammenlegen beider Tabellen).",
+          "Gar nicht, 1:1-Beziehungen sind im relationalen Modell nicht darstellbar."],
+      a: 1,
+      e: "Bei 1:1 genügt ein Fremdschlüssel in einer der beiden Tabellen. Manchmal ist es sinnvoll, beide Tabellen zusammenzulegen." }
+  ],
+  teil2: [
+    { q: "Wie viele Tabellen hat das relationale Modell mit einer optimalen Anzahl von Tabellen?",
+      o: ["3", "4", "5"], a: 1,
+      e: "Je eine Tabelle für Trainer, Sportart und Schüler plus eine Tabelle für die n:m-Beziehung „betreibt“. Die n:1-Beziehung „trainiert“ braucht keine eigene Tabelle." },
+    { q: "Wie wird die Beziehung „trainiert“ (Trainer n : 1 Sportart) abgebildet?",
+      o: ["SportartID wird als Fremdschlüssel in die Tabelle Trainer aufgenommen.",
+          "TrainerNr wird als Fremdschlüssel in die Tabelle Sportart aufgenommen.",
+          "Es entsteht eine eigene Tabelle „trainiert“."],
+      a: 0,
+      e: "Jeder Trainer trainiert genau eine Sportart – also bekommt Trainer den Fremdschlüssel SportartID." },
+    { q: "Wie wird die Beziehung „betreibt“ (Sportart m : n Schüler) abgebildet?",
+      o: ["SportartID wird als Fremdschlüssel in die Tabelle Schüler aufgenommen.",
+          "Es entsteht eine Tabelle „betreibt“ mit den Fremdschlüsseln SchülerNr und SportartID, die zusammen den Primärschlüssel bilden.",
+          "SchülerNr wird als Fremdschlüssel in die Tabelle Sportart aufgenommen."],
+      a: 1,
+      e: "n:m erfordert eine eigene Tabelle. Die Kombination aus SchülerNr und SportartID ist eindeutig und dient als zusammengesetzter Primärschlüssel." },
+    { q: "In welche Tabelle gehört das Attribut „seit“?",
+      o: ["Schüler", "Sportart", "betreibt"], a: 2,
+      e: "„seit“ beschreibt nicht den Schüler und nicht die Sportart allein, sondern die Verbindung beider – also gehört es in die Tabelle der Beziehung." }
+  ],
+  teil4: [
+    { q: "Welche Kardinalität besteht zwischen Raum und Kurs?",
+      o: ["1:1", "1:n (ein Raum – viele Kurse)", "n:m"], a: 1,
+      e: "Kurs enthält den Fremdschlüssel RaumNr. Jeder Kurs hat also genau einen Raum, ein Raum kann von mehreren Kursen genutzt werden." },
+    { q: "Was war „Note“ im zugrundeliegenden ER-Modell?",
+      o: ["Ein Attribut des Entitätstyps Kurs",
+          "Ein Attribut des Beziehungstyps zwischen Schüler und Kurs (n:m)",
+          "Ein eigener Entitätstyp"], a: 1,
+      e: "Teilnahme hat einen zusammengesetzten Primärschlüssel aus zwei Fremdschlüsseln – typisch für eine n:m-Beziehung. Note ist deren Attribut." }
+  ]
+};
+
+const RELS = [
+  { name: "Trainer", attrs: [["TrainerNr","PK"],["Name","-"],["Lizenzstufe","-"],["SportartID","FK"]] },
+  { name: "Sportart", attrs: [["SportartID","PK"],["Bezeichnung","-"]] },
+  { name: "Schüler", attrs: [["SchülerNr","PK"],["Name","-"],["Klasse","-"]] },
+  { name: "betreibt", attrs: [["SchülerNr","PKFK"],["SportartID","PKFK"],["seit","-"]] }
+];
+const CHIPS = [["PK","Primärschlüssel"],["FK","Fremdschlüssel"],["-","kein Schlüssel"]];
+
+const scores = {};
+
+function renderMC(id){
+  const box = document.querySelector("#"+id+" .qs");
+  MC[id].forEach((item,i)=>{
+    const d = document.createElement("div"); d.className="q";
+    d.innerHTML = `<p>${i+1}. ${item.q}</p>` +
+      item.o.map((o,j)=>`<label class="opt"><input type="radio" name="${id}-${i}" value="${j}">${o}</label>`).join("") +
+      `<div class="fb"></div>`;
+    box.appendChild(d);
+  });
+}
+
+function checkMC(id){
+  let right = 0;
+  document.querySelectorAll("#"+id+" .q").forEach((d,i)=>{
+    const item = MC[id][i];
+    const sel = d.querySelector("input:checked");
+    const fb = d.querySelector(".fb");
+    if(!sel){ fb.className="fb bad"; fb.textContent="Noch keine Antwort gewählt."; return; }
+    if(+sel.value===item.a){ right++; fb.className="fb ok"; fb.textContent="Richtig. "+item.e; }
+    else { fb.className="fb bad"; fb.textContent="Leider nicht. "+item.e; }
+  });
+  finish(id, right, MC[id].length);
+}
+
+function renderRels(){
+  const box = document.getElementById("rels");
+  RELS.forEach((r,ri)=>{
+    const d = document.createElement("div"); d.className="rel";
+    d.innerHTML = `<h3>${r.name}</h3>` + r.attrs.map(a=>
+      `<div class="attr" data-sol="${a[1]}"><span class="name">${a[0]}</span>
+        <div class="chips" role="group" aria-label="${r.name}: ${a[0]}">
+          ${CHIPS.map(([k,v])=>`<button type="button" class="chip" data-role="${k}" aria-pressed="false">${v}</button>`).join("")}
+        </div></div>`).join("");
+    box.appendChild(d);
+  });
+  box.addEventListener("click", e=>{
+    const chip = e.target.closest(".chip"); if(!chip) return;
+    const group = chip.parentElement;
+    const on = chip.getAttribute("aria-pressed") !== "true";
+    if(chip.dataset.role === "-"){
+      group.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+    } else {
+      group.querySelector('[data-role="-"]').setAttribute("aria-pressed","false");
+    }
+    chip.setAttribute("aria-pressed", on ? "true" : "false");
+    chip.closest(".attr").classList.remove("ok","bad");
+  });
+}
+
+function chosen(attr){
+  const sel = [...attr.querySelectorAll('.chip[aria-pressed="true"]')].map(c=>c.dataset.role);
+  if(sel.includes("PK") && sel.includes("FK")) return "PKFK";
+  return sel[0] || "";
+}
+
+function checkRels(){
+  let right=0, n=0;
+  document.querySelectorAll("#rels .attr").forEach(a=>{
+    n++;
+    const ok = chosen(a) === a.dataset.sol;
+    a.classList.toggle("ok", ok); a.classList.toggle("bad", !ok);
+    if(ok) right++;
+  });
+  const fb = document.getElementById("fb3");
+  fb.className = "fb " + (right===n ? "ok" : "bad");
+  fb.innerHTML = right===n
+    ? "Alles richtig! Das fertige Modell lautet:<br>Trainer(<u>TrainerNr</u>, Name, Lizenzstufe, ↑SportartID) · Sportart(<u>SportartID</u>, Bezeichnung) · Schüler(<u>SchülerNr</u>, Name, Klasse) · betreibt(<u>↑SchülerNr</u>, <u>↑SportartID</u>, seit)"
+    : "Rot markierte Felder stimmen noch nicht. Tipp: Jede Tabelle braucht einen Primärschlüssel. Ein Attribut, das auf eine andere Tabelle verweist, ist ein Fremdschlüssel – in „betreibt“ sind die Fremdschlüssel gleichzeitig Teil des Primärschlüssels.";
+  finish("teil3", right, n);
+}
+
+function finish(id, right, n){
+  scores[id] = [right,n];
+  document.querySelector("#"+id+" .result").textContent = `${right} von ${n} richtig`;
+  if(id==="teil2"){
+    document.getElementById("lock3").classList.add("hidden");
+    document.getElementById("body3").classList.remove("hidden");
+  }
+  const r = Object.values(scores).reduce((s,x)=>s+x[0],0);
+  const t = Object.values(scores).reduce((s,x)=>s+x[1],0);
+  const all = Object.keys(scores).length===4;
+  document.getElementById("total").textContent =
+    `${r} von ${t} Punkten in ${Object.keys(scores).length} von 4 Teilen` + (all && r===t ? " – perfekt!" : "");
+}
+
+renderMC("teil1"); renderMC("teil2"); renderMC("teil4"); renderRels();
+
+document.querySelectorAll("button[data-check]").forEach(b=>{
+  b.addEventListener("click", ()=> b.dataset.check==="teil3" ? checkRels() : checkMC(b.dataset.check));
+});
+document.getElementById("reset").addEventListener("click", ()=>{
+  document.querySelectorAll("input[type=radio]").forEach(i=>i.checked=false);
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+  document.querySelectorAll(".fb").forEach(f=>{f.className="fb";f.textContent="";});
+  document.querySelectorAll(".attr").forEach(a=>a.classList.remove("ok","bad"));
+  document.querySelectorAll(".result").forEach(r=>r.textContent="");
+  document.getElementById("lock3").classList.remove("hidden");
+  document.getElementById("body3").classList.add("hidden");
+  for(const k in scores) delete scores[k];
+  document.getElementById("total").textContent="Noch nichts geprüft.";
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+</script>
+</body>
+</html>
