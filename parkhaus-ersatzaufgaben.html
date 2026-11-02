@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parkhaus – Aufgaben</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --text:#1d2330; --muted:#5d6678; --line:#dde1e8;
+  --accent:#1f6fb2; --accent-soft:#e6f0f9; --ok:#1e7d45; --ok-soft:#e5f4ea;
+  --bad:#b3261e; --bad-soft:#fbe9e7; --code:#f1f3f6; --codetext:#1d2330; --kw:#7a3fb0; --str:#9a5b00; --cm:#5f7a5f; --ln:#9aa2b1;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14171c; --card:#1c2027; --text:#e6e9ee; --muted:#a2aab8; --line:#323844;
+    --accent:#6aaee6; --accent-soft:#1f2c3a; --ok:#6cc58f; --ok-soft:#1b2e23;
+    --bad:#f08a80; --bad-soft:#3a1f1d; --code:#232831; --codetext:#e6e9ee; --kw:#c79bf0; --str:#e4b46a; --cm:#8fb48f; --ln:#636b7a;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;margin:0 0 4px}
+h2{font-size:1.25rem;margin:0 0 12px}
+h3{font-size:1.02rem;margin:22px 0 8px}
+p{margin:8px 0}
+.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:18px 0}
+.time{font-weight:400;color:var(--muted);font-size:.9rem}
+label.name{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=text],textarea{font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+textarea{width:100%;min-height:90px;resize:vertical}
+details summary{cursor:pointer;font-weight:600}
+pre.code{background:var(--code);color:var(--codetext);border-radius:8px;padding:14px 16px 14px 8px;overflow-x:auto;font:14px/1.9 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;margin:10px 0;white-space:pre}
+pre.code .ln{display:inline-block;width:3ch;text-align:right;margin-right:2ch;color:var(--ln);user-select:none;-webkit-user-select:none}
+pre.code input{font:inherit;padding:1px 5px;border-radius:4px;border:1px dashed var(--accent);background:var(--card);color:var(--text);line-height:1.3}
+pre.code input.ok,td input.ok{border:1px solid var(--ok);background:var(--ok-soft)}
+pre.code input.bad,td input.bad{border:1px solid var(--bad);background:var(--bad-soft)}
+.kw{color:var(--kw)} .str{color:var(--str)} .cm{color:var(--cm);font-style:italic}
+button{font:inherit;cursor:pointer;border-radius:8px;padding:8px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff}
+button.sec{background:transparent;color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.feedback{margin-top:12px;padding:10px 12px;border-radius:8px;display:none}
+.feedback.show{display:block}
+.feedback.good{background:var(--ok-soft);color:var(--ok)}
+.feedback.mixed{background:var(--accent-soft);color:var(--text)}
+.feedback ul{margin:6px 0 0;padding-left:20px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
+th{background:var(--accent-soft)}
+td code,th code{font:13px ui-monospace,Consolas,monospace;white-space:nowrap}
+tr.start td{background:var(--code);color:var(--muted)}
+td input{width:100%;min-width:70px;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:var(--text)}
+.opts label{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+.small{font-size:.9rem;color:var(--muted)}
+@media print{button,.row{display:none} body{background:#fff} .card{border:1px solid #999}}
+</style>
+</head>
+<body>
+<main>
+<h1>Parkhaus – Aufgaben für zu Hause</h1>
+<p class="sub">Informatik · Objektorientierte Programmierung · Bearbeitungszeit ca. 30 Minuten für diese Datei.<br>
+Die Aufgaben 1, 2 und 4c bearbeitest du auf dem Arbeitsblatt.</p>
+
+<div class="card">
+  <label class="name">Dein Name: <input type="text" id="studentName" placeholder="Vorname Nachname" size="28"></label>
+  <p class="small">Deine Eingaben werden in diesem Browser zwischengespeichert. Am Ende lädst du deine Antworten als Textdatei herunter und schickst sie an Herrn Fiedler.</p>
+</div>
+
+<div class="card">
+<details open>
+<summary>Ausgangssituation</summary>
+<p>Die Stadt möchte die Parkhäuser in der Innenstadt digital verwalten. Für jedes Parkhaus sind ein Name, die Anzahl der Stellplätze und der Preis pro Stunde bekannt. Das Programm soll außerdem festhalten, wie viele Stellplätze gerade belegt sind und wie viel Geld insgesamt eingenommen wurde. Ein neues Parkhaus ist zu Beginn leer und hat noch nichts eingenommen.</p>
+<p>Ein Auto kann einfahren, solange ein Platz frei ist. Sonst erscheint der Hinweis <em>Parkhaus voll!</em> Beim Ausfahren wird die Parkdauer in Stunden als Parameter übergeben. Das Programm berechnet den Preis, gibt ihn aus und addiert ihn zu den Einnahmen. Steht kein Auto im Parkhaus, erscheint <em>Es steht kein Auto im Parkhaus.</em></p>
+<p>Man kann jederzeit abfragen, wie viele Plätze frei sind und wie hoch die Einnahmen sind. Der Betreiber darf den Preis pro Stunde ändern, aber nur auf einen Wert größer als 0. Bei einem ungültigen Wert bleibt der alte Preis erhalten.</p>
+</details>
+</div>
+
+<!-- AUFGABE 3 -->
+<div class="card">
+<h2>Aufgabe 3 – Lückencode ergänzen <span class="time">(ca. 15 min)</span></h2>
+<p>a) Die Klasse <code>Parkhaus</code> ist fast fertig. Ergänze die Lücken so, dass die Klasse genau das tut, was in der Ausgangssituation beschrieben ist. Klicke danach auf „Prüfen“. Falsche Lücken werden rot markiert, und du bekommst einen Tipp.</p>
+<pre class="code" id="gapCode"></pre>
+<div class="row">
+  <button id="checkGaps">Prüfen</button>
+</div>
+<div class="feedback" id="gapFeedback"></div>
+
+<h3>b) Warum prüft die Methode <code>ausfahren</code> als Erstes eine Bedingung, bevor sie rechnet?</h3>
+<textarea id="a3b" placeholder="Deine Antwort …"></textarea>
+<h3>c) Woran erkennst du im Code, dass ein Attribut privat ist? Vergleiche mit deinem Klassendiagramm aus Aufgabe 1.</h3>
+<textarea id="a3c" placeholder="Deine Antwort …"></textarea>
+</div>
+
+<!-- AUFGABE 4 -->
+<div class="card">
+<h2>Aufgabe 4 – Testen mit einem Ablaufprotokoll <span class="time">(ca. 10 min)</span></h2>
+<p>Ein Parkhaus mit nur <strong>einem</strong> Stellplatz wird erzeugt:</p>
+<pre class="code" id="ctorCode"></pre>
+<p>Danach werden die Anweisungen 1 bis 5 nacheinander ausgeführt. Die Attribute <code>__name</code> und <code>__stellplaetze</code> ändern sich nicht und stehen deshalb nicht in der Tabelle.</p>
+<p>a) Trage nach jeder Anweisung die Werte der Attribute ein. In die Spalte „Ausgabe“ schreibst du, was auf dem Bildschirm erscheint. Gibt es keine Ausgabe, lässt du das Feld leer.</p>
+<div class="tablewrap">
+<table id="traceTable">
+<thead><tr><th>#</th><th>Anweisung</th><th><code>__belegt</code></th><th><code>__einnahmen</code></th><th><code>__preis_pro_stunde</code></th><th>Ausgabe</th></tr></thead>
+<tbody>
+<tr class="start"><td>–</td><td>Startzustand</td><td>0</td><td>0</td><td>2.0</td><td></td></tr>
+</tbody>
+</table>
+</div>
+<div class="row"><button id="checkTrace">Prüfen</button></div>
+<div class="feedback" id="traceFeedback"></div>
+</div>
+
+<!-- AUFGABE 5 -->
+<div class="card">
+<h2>Aufgabe 5 – Fehlersuche <span class="time">(ca. 5 min)</span></h2>
+<p>Eine Mitschülerin hat die Methode <code>ausfahren</code> so implementiert:</p>
+<pre class="code" id="bugCode"></pre>
+<p>Welche Fehler enthält die Methode? Kreuze alle zutreffenden Aussagen an.</p>
+<div class="opts" id="bugOpts"></div>
+<div class="row"><button id="checkBugs">Prüfen</button></div>
+<div class="feedback" id="bugFeedback"></div>
+</div>
+
+<div class="card">
+<h2>Abgabe</h2>
+<p>Wenn du fertig bist, lade deine Antworten herunter und schicke die Datei an Herrn Fiedler. Die Ergebnisse der Prüf-Buttons werden mitgespeichert.</p>
+<div class="row">
+  <button id="download">Antworten herunterladen (.txt)</button>
+  <button class="sec" id="printBtn">Drucken</button>
+</div>
+<div class="feedback" id="dlFeedback"></div>
+</div>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Hilfsfunktionen ---------- */
+function $(id){return document.getElementById(id);}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function squash(s){
+  var t=String(s).replace(/\s+/g,"");
+  while(/^\(.*\)$/.test(t)) t=t.slice(1,-1);
+  return t;
+}
+function textNorm(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]/g,"");}
+function parseNum(s){
+  var t=String(s).trim().replace(",",".").replace(/[^0-9.\-]/g,"");
+  if(t===""||t==="-"||t===".") return NaN;
+  return Number(t);
+}
+function numEq(s,expected){var n=parseNum(s);return !isNaN(n)&&Math.abs(n-expected)<1e-9;}
+function show(el,cls,html){el.className="feedback show "+cls;el.innerHTML=html;}
+/* Quelltext mit Zeilennummern ausgeben */
+function renderCode(el,html,start){
+  var n=start||1;
+  el.innerHTML=html.split("\n").map(function(line,i){return '<span class="ln">'+(i+n)+'</span>'+line;}).join("\n");
+}
+
+var results={gaps:null,trace:null,bugs:null};
+
+/* ---------- Aufgabe 3: Lückencode ---------- */
+var GAPS={
+ g1:{w:16,ok:["stellplaetze"],hint:"Der Parameter des Konstruktors wird übernommen."},
+ g2:{w:8,ok:["0"],hint:"Ein neues Parkhaus ist leer."},
+ g3:{w:8,ok:["0","0.0","0.00"],hint:"Ein neues Parkhaus hat noch nichts eingenommen."},
+ g4:{w:40,ok:["self.__belegt<self.__stellplaetze","self.__stellplaetze>self.__belegt","self.__belegt<=self.__stellplaetze-1","self.__stellplaetze-self.__belegt>0","self.get_freie_plaetze()>0","self.get_freie_plaetze()>=1","self.get_freie_plaetze()!=0"],hint:"Ein Auto darf nur einfahren, wenn weniger Plätze belegt sind, als es insgesamt gibt. Überlege genau, ob &lt; oder &lt;= richtig ist."},
+ g5:{w:24,ok:["self.__belegt+1","1+self.__belegt"],hint:"Nach dem Einfahren ist ein Platz mehr belegt."},
+ g6:{w:24,ok:["self.__belegt>0","self.__belegt>=1","self.__belegt!=0","0<self.__belegt"],hint:"Ausfahren geht nur, wenn mindestens ein Auto im Parkhaus steht."},
+ g7:{w:38,ok:["stunden*self.__preis_pro_stunde","self.__preis_pro_stunde*stunden"],hint:"Parkdauer mal Preis pro Stunde."},
+ g8:{w:30,ok:["self.__einnahmen+preis","preis+self.__einnahmen"],hint:"Der neue Betrag kommt zu den bisherigen Einnahmen dazu. Er ersetzt sie nicht."},
+ g9:{w:24,ok:["self.__belegt-1"],hint:"Nach dem Ausfahren ist ein Platz wieder frei."},
+ g10:{w:36,text:"esstehtkeinautoimparkhaus",hint:"Hier gehört der Hinweistext aus der Ausgangssituation hin."},
+ g11:{w:40,ok:["self.__stellplaetze-self.__belegt"],hint:"Freie Plätze = alle Plätze minus belegte Plätze."},
+ g12:{w:22,ok:["self.__einnahmen"],hint:"Die Methode gibt einfach das private Attribut zurück."},
+ g13:{w:14,ok:["preis>0","0<preis"],hint:"Nur Preise größer als 0 sind erlaubt."}
+};
+var GAP_ORDER=["g1","g2","g3","g4","g5","g6","g7","g8","g9","g10","g11","g12","g13"];
+
+var CODE=
+'<span class="kw">class</span> Parkhaus:\n'+
+'\n'+
+'    <span class="kw">def</span> __init__(self, name, stellplaetze, preis_pro_stunde):\n'+
+'        self.__name = name\n'+
+'        self.__stellplaetze = [[g1]]\n'+
+'        self.__preis_pro_stunde = preis_pro_stunde\n'+
+'        self.__belegt = [[g2]]\n'+
+'        self.__einnahmen = [[g3]]\n'+
+'\n'+
+'    <span class="kw">def</span> einfahren(self):\n'+
+'        <span class="cm"># Ist noch mindestens ein Stellplatz frei?</span>\n'+
+'        <span class="kw">if</span> [[g4]]:\n'+
+'            self.__belegt = [[g5]]\n'+
+'        <span class="kw">else</span>:\n'+
+'            print(<span class="str">"Parkhaus voll!"</span>)\n'+
+'\n'+
+'    <span class="kw">def</span> ausfahren(self, stunden):\n'+
+'        <span class="cm"># Steht mindestens ein Auto im Parkhaus?</span>\n'+
+'        <span class="kw">if</span> [[g6]]:\n'+
+'            <span class="cm"># Preis aus Parkdauer und Preis pro Stunde berechnen</span>\n'+
+'            preis = [[g7]]\n'+
+'            print(preis)\n'+
+'            self.__einnahmen = [[g8]]\n'+
+'            self.__belegt = [[g9]]\n'+
+'        <span class="kw">else</span>:\n'+
+'            print(<span class="str">"</span>[[g10]]<span class="str">"</span>)\n'+
+'\n'+
+'    <span class="kw">def</span> get_freie_plaetze(self):\n'+
+'        <span class="cm"># freie Plätze aus der Gesamtzahl und den belegten Plätzen berechnen</span>\n'+
+'        <span class="kw">return</span> [[g11]]\n'+
+'\n'+
+'    <span class="kw">def</span> get_einnahmen(self):\n'+
+'        <span class="kw">return</span> [[g12]]\n'+
+'\n'+
+'    <span class="kw">def</span> set_preis_pro_stunde(self, preis):\n'+
+'        <span class="kw">if</span> [[g13]]:\n'+
+'            self.__preis_pro_stunde = preis';
+
+var gapNumber={};
+renderCode($("gapCode"),CODE.replace(/\[\[(g\d+)\]\]/g,function(m,id){
+  return '<input type="text" id="'+id+'" style="width:'+GAPS[id].w+'ch" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Lücke">';
+}));
+/* Zeilennummer jeder Lücke merken, damit die Tipps darauf verweisen können */
+CODE.split("\n").forEach(function(line,i){
+  var m=line.match(/\[\[(g\d+)\]\]/g);
+  if(m) m.forEach(function(x){gapNumber[x.slice(2,-2)]=i+1;});
+});
+
+function gapCorrect(id,val){
+  var g=GAPS[id];
+  if(g.text) return textNorm(val.replace(/["']/g,""))===g.text;
+  var v=squash(val).replace(/'/g,'"');
+  return g.ok.indexOf(v)!==-1;
+}
+$("checkGaps").addEventListener("click",function(){
+  var correct=0, tips=[];
+  GAP_ORDER.forEach(function(id){
+    var el=$(id), val=el.value;
+    var ok=gapCorrect(id,val);
+    el.classList.toggle("ok",ok); el.classList.toggle("bad",!ok);
+    if(ok){correct++;}
+    else{
+      var t="Zeile "+gapNumber[id]+": "+GAPS[id].hint;
+      if(/self\.(?!__|get_)/.test(val)) t+=" Denk daran: Private Attribute sprichst du mit <code>self.__</code> an.";
+      if(val.trim()==="") t="Zeile "+gapNumber[id]+": Die Lücke ist noch leer.";
+      tips.push(t);
+    }
+  });
+  results.gaps=correct+" von "+GAP_ORDER.length+" Lücken richtig";
+  if(correct===GAP_ORDER.length) show($("gapFeedback"),"good","Alle Lücken sind richtig. Sehr gut!");
+  else show($("gapFeedback"),"mixed","<strong>"+correct+" von "+GAP_ORDER.length+" Lücken richtig.</strong><ul><li>"+tips.join("</li><li>")+"</li></ul>");
+  save();
+});
+
+/* ---------- Aufgabe 4a: Ablaufprotokoll ---------- */
+renderCode($("ctorCode"),'p = Parkhaus(<span class="str">"Am Markt"</span>, 1, 2.0)');
+var STEPS=[
+ {code:'p.einfahren()',b:1,e:0,p:2.0,out:null},
+ {code:'p.einfahren()',b:1,e:0,p:2.0,out:"Parkhaus voll!"},
+ {code:'p.set_preis_pro_stunde(0)',b:1,e:0,p:2.0,out:null},
+ {code:'p.ausfahren(3)',b:0,e:6.0,p:2.0,out:6.0},
+ {code:'p.ausfahren(1)',b:0,e:6.0,p:2.0,out:"Es steht kein Auto im Parkhaus."}
+];
+var tb=document.querySelector("#traceTable tbody");
+STEPS.forEach(function(s,i){
+  var tr=document.createElement("tr");
+  tr.innerHTML="<td>"+(i+1)+"</td><td><code>"+esc(s.code)+"</code></td>"+
+    ["b","e","p","o"].map(function(k){return '<td><input type="text" id="t'+i+k+'" autocomplete="off"></td>';}).join("");
+  tb.appendChild(tr);
+});
+function outCorrect(val,exp){
+  var v=val.trim();
+  if(exp===null) return v===""||/^[-–—]$/.test(v)||/^keine/i.test(v);
+  if(typeof exp==="number") return numEq(v,exp);
+  return textNorm(v)===textNorm(exp);
+}
+$("checkTrace").addEventListener("click",function(){
+  var correct=0,total=0,wrongRows=[];
+  STEPS.forEach(function(s,i){
+    var rowOk=true;
+    [["b",s.b],["e",s.e],["p",s.p]].forEach(function(pair){
+      var el=$("t"+i+pair[0]); var ok=numEq(el.value,pair[1]);
+      el.classList.toggle("ok",ok);el.classList.toggle("bad",!ok);
+      total++; if(ok)correct++; else rowOk=false;
+    });
+    var oel=$("t"+i+"o"); var ook=outCorrect(oel.value,s.out);
+    oel.classList.toggle("ok",ook);oel.classList.toggle("bad",!ook);
+    total++; if(ook)correct++; else rowOk=false;
+    if(!rowOk) wrongRows.push(i+1);
+  });
+  results.trace=correct+" von "+total+" Feldern richtig";
+  if(correct===total) show($("traceFeedback"),"good","Das Ablaufprotokoll ist vollständig richtig.");
+  else{
+    var msg="<strong>"+correct+" von "+total+" Feldern richtig.</strong> Fehler bei Anweisung "+wrongRows.join(", ")+".";
+    msg+="<ul><li>Ein Fehler bei einer frühen Anweisung wirkt sich oft auf alle späteren aus. Beginne die Suche oben.</li>"+
+         "<li>Prüfe bei jeder Methode zuerst die Bedingung: Wird der if-Teil oder der else-Teil ausgeführt?</li></ul>";
+    show($("traceFeedback"),"mixed",msg);
+  }
+  save();
+});
+
+/* ---------- Aufgabe 5 ---------- */
+renderCode($("bugCode"),
+'<span class="kw">def</span> ausfahren(self, stunden):\n'+
+'    preis = stunden * self.__preis_pro_stunde\n'+
+'    print(preis)\n'+
+'    self.__einnahmen = preis\n'+
+'    self.__belegt = self.__belegt - 1');
+var BUGS=[
+ {t:"Die Einnahmen werden überschrieben, statt dass der Preis dazuaddiert wird.",ok:true},
+ {t:"Der Preis wird falsch berechnet.",ok:false},
+ {t:"Es wird nicht geprüft, ob überhaupt ein Auto im Parkhaus steht.",ok:true},
+ {t:"Beim Ausfahren müsste <code>__belegt</code> erhöht werden.",ok:false},
+ {t:"Der Preis dürfte nicht mit <code>print</code> ausgegeben werden.",ok:false}
+];
+BUGS.forEach(function(b,i){
+  $("bugOpts").insertAdjacentHTML("beforeend",'<label><input type="checkbox" id="bug'+i+'"><span>'+b.t+'</span></label>');
+});
+$("checkBugs").addEventListener("click",function(){
+  var right=BUGS.filter(function(b,i){return $("bug"+i).checked===b.ok;}).length;
+  results.bugs=right+" von "+BUGS.length+" Aussagen richtig beurteilt";
+  if(right===BUGS.length) show($("bugFeedback"),"good","Richtig. Du hast beide Fehler gefunden.");
+  else show($("bugFeedback"),"mixed","<strong>"+right+" von "+BUGS.length+" Aussagen richtig beurteilt.</strong><ul><li>Es gibt genau zwei Fehler.</li><li>Vergleiche die Methode Zeile für Zeile mit deiner Lösung aus Aufgabe 3.</li></ul>");
+  save();
+});
+
+/* ---------- Speichern / Laden ---------- */
+var KEY="parkhaus-ersatzaufgaben-v2";
+function allFields(){return Array.prototype.slice.call(document.querySelectorAll("main input, main textarea"));}
+function save(){
+  try{
+    var data={};
+    allFields().forEach(function(el){if(!el.id)return;data[el.id]=el.type==="checkbox"?el.checked:el.value;});
+    data.__results=results;
+    localStorage.setItem(KEY,JSON.stringify(data));
+  }catch(e){}
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY); if(!raw)return;
+    var data=JSON.parse(raw);
+    allFields().forEach(function(el){
+      if(!el.id||!(el.id in data))return;
+      if(el.type==="checkbox") el.checked=!!data[el.id]; else el.value=data[el.id];
+    });
+    if(data.__results) results=data.__results;
+  }catch(e){}
+}
+load();
+document.addEventListener("input",save);
+document.addEventListener("change",save);
+
+/* ---------- Export ---------- */
+$("download").addEventListener("click",function(){
+  var name=$("studentName").value.trim();
+  if(!name){show($("dlFeedback"),"mixed","Bitte trage oben zuerst deinen Namen ein.");$("studentName").focus();return;}
+  var L=[];
+  L.push("Parkhaus – Aufgaben für zu Hause");
+  L.push("Name: "+name);
+  L.push("Datum: "+new Date().toLocaleString("de-DE"));
+  L.push("");
+  L.push("=== Aufgabe 3a: Lückencode ===");
+  L.push("Ergebnis Prüfung: "+(results.gaps||"nicht geprüft"));
+  GAP_ORDER.forEach(function(id){L.push("Zeile "+gapNumber[id]+": "+$(id).value);});
+  L.push("");
+  L.push("=== Aufgabe 3b ===");L.push($("a3b").value||"(leer)");L.push("");
+  L.push("=== Aufgabe 3c ===");L.push($("a3c").value||"(leer)");L.push("");
+  L.push("=== Aufgabe 4a: Ablaufprotokoll ===");
+  L.push("Ergebnis Prüfung: "+(results.trace||"nicht geprüft"));
+  L.push("# | Anweisung | __belegt | __einnahmen | __preis_pro_stunde | Ausgabe");
+  STEPS.forEach(function(s,i){
+    L.push((i+1)+" | "+s.code+" | "+$("t"+i+"b").value+" | "+$("t"+i+"e").value+" | "+$("t"+i+"p").value+" | "+$("t"+i+"o").value);
+  });
+  L.push("");
+  L.push("=== Aufgabe 5: Fehlersuche ===");
+  L.push("Ergebnis Prüfung: "+(results.bugs||"nicht geprüft"));
+  BUGS.forEach(function(b,i){L.push("["+($("bug"+i).checked?"x":" ")+"] "+b.t.replace(/<[^>]+>/g,""));});
+  var blob=new Blob([L.join("\n")],{type:"text/plain;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="Parkhaus_"+name.replace(/[^\wäöüÄÖÜß-]+/g,"_")+".txt";
+  document.body.appendChild(a);a.click();a.remove();
+  show($("dlFeedback"),"good","Die Datei wurde heruntergeladen. Schicke sie jetzt an Herrn Fiedler.");
+});
+$("printBtn").addEventListener("click",function(){window.print();});
+})();
+</script>
+</body>
+</html>
